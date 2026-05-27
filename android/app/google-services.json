@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18599345259",
+    "project_id": "museumpokermon",
+    "storage_bucket": "museumpokermon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18599345259:android:de74e0fdfe52af6627452e",
+        "android_client_info": {
+          "package_name": "com.rn_base"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDl2tON_nHz8wp9EiCP5wBoNjb1iLrHTTI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn remove *)",
+      "Bash(node -e \"const m=require\\('c:/Users/Hoan/Documents/ReactNativeLearing/RN_Base/node_modules/@react-native-vector-icons/material-icons/glyphmaps/MaterialIcons.json'\\); const k=Object.keys\\(m\\); console.log\\('chat:', k.filter\\(x=>x.startsWith\\('chat'\\)\\).join\\(', '\\)\\); console.log\\('inbox:', k.filter\\(x=>x.includes\\('inbox'\\)||x.includes\\('mail'\\)\\).slice\\(0,20\\).join\\(', '\\)\\); console.log\\('settings:', k.filter\\(x=>x.startsWith\\('settings'\\)\\).slice\\(0,15\\).join\\(', '\\)\\);\")",
+      "Bash(node -e \"const m=require\\('c:/Users/Hoan/Documents/ReactNativeLearing/RN_Base/node_modules/@react-native-vector-icons/material-icons/glyphmaps/MaterialIcons.json'\\); const k=Object.keys\\(m\\); console.log\\('home:', k.filter\\(x=>x.startsWith\\('home'\\)\\).join\\(', '\\)\\); console.log\\('person:', k.filter\\(x=>x.startsWith\\('person'\\)\\).slice\\(0,15\\).join\\(', '\\)\\); console.log\\('settings outline candidates:', k.filter\\(x=>x.includes\\('tune'\\)||x.includes\\('cog'\\)||x.includes\\('gear'\\)\\).join\\(', '\\)\\);\")"
+    ]
+  }
+}
