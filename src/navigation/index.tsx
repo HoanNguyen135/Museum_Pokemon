@@ -1,18 +1,14 @@
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { StyleSheet, ActivityIndicator, StatusBar } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {
-  createStaticNavigation,
-  NavigationContainer,
-} from '@react-navigation/native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 import { navigationRef } from '../utils/navigationUtils';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import AppTabs from './tabs/AppTabs';
 import SplashScreen from 'react-native-splash-screen';
 import messaging from '@react-native-firebase/messaging';
-import { log } from 'node:console';
 
 const AppNavigationContainer = () => {
   const linking = {
@@ -60,9 +56,13 @@ const AppNavigationContainer = () => {
       fallback={<ActivityIndicator animating />}
     >
       <BottomSheetModalProvider>
-        <View style={styles.navigationLayout} onLayout={onLayoutView}>
+        <SafeAreaView
+          edges={['top']}
+          style={styles.navigationLayout}
+          onLayout={onLayoutView}
+        >
           <AppTabs />
-        </View>
+        </SafeAreaView>
       </BottomSheetModalProvider>
     </NavigationContainer>
   );
@@ -73,6 +73,12 @@ const AppNavigator = () => {
     <GestureHandlerRootView style={styles.navigationLayout}>
       <KeyboardProvider>
         <SafeAreaProvider>
+          <StatusBar
+            animated
+            translucent={false}
+            backgroundColor="#FFFFFF"
+            barStyle="dark-content"
+          />
           <AppNavigationContainer />
         </SafeAreaProvider>
       </KeyboardProvider>

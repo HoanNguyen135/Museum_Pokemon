@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react-native';
 import MainApp from './src/App';
+import "./global.css"
 
 if (__DEV__) {
   Sentry.init({

@@ -4,7 +4,7 @@ import { MaterialIcons } from '@react-native-vector-icons/material-icons';
 
 const HomeScreen = () => {
   return (
-    <View style={{ padding: 16, gap: 12 }}>
+    <View className='flex-1 bg-red-500'>
       <Text>HomeScreen</Text>
       <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
         <MaterialIcons name="home" size={28} color="#4F8EF7" />
