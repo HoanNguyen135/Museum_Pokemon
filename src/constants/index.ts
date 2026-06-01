@@ -1,4 +1,4 @@
-export const TAB_BAR_HEIGHT = 83;
+export const TAB_BAR_HEIGHT = 90;
 
 export const WEB_CLIENT_ID = '18599345259-4iu7giaj2cddhk5ihcbsb6kjf5ldkft9.apps.googleusercontent.com';
 

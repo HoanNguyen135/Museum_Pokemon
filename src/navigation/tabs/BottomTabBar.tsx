@@ -29,8 +29,8 @@ type TabBarIconsProps = {
 };
 
 const TAB_ICON_SIZE = 26;
-const TAB_ICON_COLOR_FOCUSED = '#1F2937';
-const TAB_ICON_COLOR_UNFOCUSED = '#9CA3AF';
+const TAB_ICON_COLOR_UNFOCUSED  = '#1F2937';
+const TAB_ICON_COLOR_FOCUSED  = '#9CA3AF';
 
 const TabBarIcons = ({ focused, route }: TabBarIconsProps) => {
   const color = focused ? TAB_ICON_COLOR_FOCUSED : TAB_ICON_COLOR_UNFOCUSED;
@@ -52,30 +52,6 @@ type TabBarBackgroundProps = BlurViewProps & PropsWithChildren;
 
 const TabBarBackground = (props: TabBarBackgroundProps) => {
   const { children, style, blurAmount, blurType } = props;
-
-  //   const currentState = useAppSelector(selectCurrentState);
-
-  const tabBarHeight = useTabBarHeight();
-
-  //   const derivedAnimatedState = useDerivedValue(() =>
-  //     currentState === 'Select'
-  //       ? withSpring(1, tabExitSpringConfig)
-  //       : withSpring(0, tabEnterSpringConfig),
-  //   );
-
-  //   const animatedTabBarStyle = useAnimatedStyle(() => {
-  //     return {
-  //       transform: [
-  //         {
-  //           translateY: interpolate(
-  //             derivedAnimatedState.value,
-  //             [0, 1],
-  //             [0, tabBarHeight],
-  //           ),
-  //         },
-  //       ],
-  //     };
-  //   });
 
   return Platform.OS === 'ios' ? (
     <AnimatedBlurView {...{ blurAmount, blurType }} style={[style]}>
@@ -173,6 +149,9 @@ export const BottomTabBar = ({
           styles.tabBarBase,
           styles.tabBarAndroid,
           { height: tabBarHeight },
+          {
+            
+          }
         ],
       })}
     >
@@ -204,16 +183,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingLeft: 72,
     paddingRight: 71,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: '#313961'
   },
   tabBarIOS: {
     paddingTop: 11,
     paddingBottom: 32,
-    backgroundColor: '#00000009',
+     backgroundColor: '#313961'
   },
   tabBarAndroid: {
     paddingTop: 11,
     paddingBottom: 11,
-    backgroundColor: 'white',
+    backgroundColor: '#313961'
   },
   topBorder: {
     position: 'absolute',
