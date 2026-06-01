@@ -20,7 +20,10 @@
       ],
       "@utils/*": [
         "./src/utils/*"
-      ]
+      ],
+       "@types/*": [
+        "./src/types/*"
+      ],
     }
   },
   "include": [

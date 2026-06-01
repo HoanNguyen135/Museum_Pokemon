@@ -72,7 +72,12 @@ const Tabs = () => {
 };
 
 const AppTabs = () => {
-  const isLoggedIn = true;
+
+
+    const user = useAppSelector(selectUser);
+
+
+  const isLoggedIn = !!user;
 
   if (isLoggedIn) {
     return (

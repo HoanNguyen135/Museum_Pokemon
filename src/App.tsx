@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Provider } from 'react-redux';
 import { persistor, store } from './store';
 import AppNavigator from './navigation';
 import { PersistGate } from 'redux-persist/integration/react';
 
 const MainApp = () => {
+
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>

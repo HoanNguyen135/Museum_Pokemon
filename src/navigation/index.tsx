@@ -1,4 +1,4 @@
-import { StyleSheet, ActivityIndicator, StatusBar } from 'react-native';
+import { StyleSheet, ActivityIndicator, StatusBar, ScrollView, View } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -8,7 +8,8 @@ import { navigationRef } from '../utils/navigationUtils';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import AppTabs from './tabs/AppTabs';
 import SplashScreen from 'react-native-splash-screen';
-import messaging from '@react-native-firebase/messaging';
+import messaging, { getMessaging, onMessage, setBackgroundMessageHandler, onNotificationOpenedApp } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
 
 const AppNavigationContainer = () => {
   const linking = {
@@ -22,25 +23,27 @@ const AppNavigationContainer = () => {
   };
 
   useEffect(() => {
-    messaging().onMessage(async remoteMessage => {
+    const app = getApp();
+    const messagingInstance = getMessaging(app);
+
+    const unsubscribeMessage = onMessage(messagingInstance, async remoteMessage => {
       console.log(remoteMessage);
     });
 
-    const unsubscribe = messaging().setBackgroundMessageHandler(
-      async message => {
-        console.log('Message handled in the background', message);
-      },
-    );
+    setBackgroundMessageHandler(messagingInstance, async message => {
+      console.log('Message handled in the background', message);
+    });
 
-    const unsubscribeNotification = messaging().onNotificationOpenedApp(
-      message => {
-        if (message) {
-          console.log(unsubscribeNotification);
-        }
-      },
-    );
+    const unsubscribeNotification = onNotificationOpenedApp(messagingInstance, message => {
+      if (message) {
+        console.log('Notification opened app:', message);
+      }
+    });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeMessage();
+      unsubscribeNotification();
+    };
   }, []);
 
   return (
@@ -56,13 +59,13 @@ const AppNavigationContainer = () => {
       fallback={<ActivityIndicator animating />}
     >
       <BottomSheetModalProvider>
-        <SafeAreaView
-          edges={['top']}
+        <View
+          // edges={['top']}
           style={styles.navigationLayout}
           onLayout={onLayoutView}
         >
           <AppTabs />
-        </SafeAreaView>
+        </View>
       </BottomSheetModalProvider>
     </NavigationContainer>
   );
@@ -71,16 +74,10 @@ const AppNavigationContainer = () => {
 const AppNavigator = () => {
   return (
     <GestureHandlerRootView style={styles.navigationLayout}>
-      <KeyboardProvider>
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
         <SafeAreaProvider>
-          <StatusBar
-            animated
-            translucent={false}
-            backgroundColor="#FFFFFF"
-            barStyle="dark-content"
-          />
-          <AppNavigationContainer />
-        </SafeAreaProvider>
+           <AppNavigationContainer /> 
+         </SafeAreaProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
   );

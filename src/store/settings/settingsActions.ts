@@ -1,11 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/react-native';
 
-import messaging, {
-  getMessaging,
-  getToken,
-  hasPermission,
-} from '@react-native-firebase/messaging';
+import { getMessaging, getToken, hasPermission } from '@react-native-firebase/messaging';
 import { Platform, PermissionsAndroid } from 'react-native';
 import { URL_TYPE } from '@/constants/url';
 import {

@@ -48,25 +48,31 @@ const middlewares = [];
 
 export const store = configureStore({
   reducer: persistedReducer,
-  // enhancers: getDefaultEnhancers =>
-  //   shouldLoadDebugger
-  //     ? getDefaultEnhancers().concat(reactotronInstance.createEnhancer!())
-  //     : getDefaultEnhancers(),
-  //  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-  //      serializableCheck: {
-  //       ignoredActions: [
-  //         FLUSH,
-  //         REHYDRATE,
-  //         PAUSE,
-  //         PERSIST,
-  //         PURGE,
-  //         REGISTER,
-  //         'auth/setCurrentUserAvailability',
-  //         'contact/updateContactsPresence',
-  //       ],
-  //     },
-  //     immutableCheck: { warnAfter: 256 },
-  //  }).concat(middlewares)
+  enhancers: getDefaultEnhancers =>
+    shouldLoadDebugger
+      ? getDefaultEnhancers().concat(reactotronInstance.createEnhancer!())
+      : getDefaultEnhancers(),
+   middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+  // middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+  //     serializableCheck: {
+  //      ignoredActions: [
+  //        FLUSH,
+  //        REHYDRATE,
+  //        PAUSE,
+  //        PERSIST,
+  //        PURGE,
+  //        REGISTER,
+  //        'auth/setCurrentUserAvailability',
+  //        'contact/updateContactsPresence',
+  //      ],
+  //    },
+  //    immutableCheck: { warnAfter: 256 },
+  // }).concat(middlewares)
 });
 
 export const persistor = persistStore(store);

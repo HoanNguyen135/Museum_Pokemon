@@ -20,13 +20,6 @@ const AuthStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
-        options={{
-          headerShown: true,
-          headerBackTitle: 'Back',
-          headerBackVisible: true,
-          headerShadowVisible: false,
-          title: '',
-        }}
         name={SCREEN_NAME.LOGIN_SCREEN}
         component={LoginScreen}
       />
