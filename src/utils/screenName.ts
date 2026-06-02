@@ -4,6 +4,7 @@ const SCREEN_NAME = {
   REGISTER_SCREEN: 'RegisterScreen',
   PROFILE_SCREEN: 'ProfileScreen',
   TAB: 'Tab',
+  DETAIL_POKEMON : 'DetailPokemon'
 } as const;
 
 export default SCREEN_NAME;

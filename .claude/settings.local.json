@@ -22,7 +22,17 @@
       "Bash(mkdir -p patches)",
       "Bash(yarn patch-package *)",
       "Bash(patch -p1 --dry-run)",
-      "Bash(npx react-native *)"
+      "Bash(npx react-native *)",
+      "Bash(echo \"exit: $?\")",
+      "WebFetch(domain:api.pokemontcg.io)",
+      "WebFetch(domain:docs.pokemontcg.io)",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/sets?page=1&pageSize=5\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/types\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/subtypes\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/supertypes\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/rarities\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/cards?page=1&pageSize=3&q=supertype:Pokemon&orderBy=-tcgplayer.prices.holofoil.mid\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(json.dumps\\(c, indent=2\\)[:500]\\) for c in d.get\\('data',[]\\)]\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\Hoan\\Documents\\ReactNativeLearing\\RN_Base",

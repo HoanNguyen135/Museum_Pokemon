@@ -28,7 +28,7 @@ type TabBarIconsProps = {
   route: RouteProp<TabParamList, keyof TabParamList>;
 };
 
-const TAB_ICON_SIZE = 26;
+const TAB_ICON_SIZE = 29;
 const TAB_ICON_COLOR_UNFOCUSED  = '#1F2937';
 const TAB_ICON_COLOR_FOCUSED  = '#9CA3AF';
 

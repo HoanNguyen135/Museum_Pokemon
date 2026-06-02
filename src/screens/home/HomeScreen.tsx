@@ -38,14 +38,11 @@ const HomeScreen = () => {
 
     const [isLoadMore, setLoadMore] = useState<boolean>(false);
 
-
-
-
     useEffect(() => {
-      if(params.page){
-   loadCards();
+      if (params.page) {
+        loadCards();
       }
-   
+
 
     }, [params])
 
@@ -64,7 +61,7 @@ const HomeScreen = () => {
           orderBy: 'name',
           select: CARD_SELECT_FIELDS,
         });
-        
+
         if (isLoadMore) {
           setListCardsHot([...listCardsHot, ...response.data]);
 

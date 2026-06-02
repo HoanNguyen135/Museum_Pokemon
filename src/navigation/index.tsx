@@ -22,6 +22,8 @@ const AppNavigationContainer = () => {
     SplashScreen.hide();
   };
 
+     SplashScreen.hide();
+
   useEffect(() => {
     const app = getApp();
     const messagingInstance = getMessaging(app);

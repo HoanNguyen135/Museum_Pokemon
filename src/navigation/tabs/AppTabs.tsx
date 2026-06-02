@@ -14,9 +14,11 @@ import { selectUser } from '@/store/auth/authSelector';
 import * as Sentry from '@sentry/react-native';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
 import { settingsActions } from '@/store/settings/settingsActions';
+import DetailPokemon from '@/screens/pokemon/DetailPokemon';
 
 export type TabBarExcludedScreenParamList = {
   Tab: undefined;
+  DetailPokemon: undefined
 };
 
 export type TabParamList = {
@@ -83,6 +85,7 @@ const AppTabs = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name={SCREEN_NAME.TAB} component={Tabs} />
+          <Stack.Screen name={SCREEN_NAME.DETAIL_POKEMON} component={DetailPokemon} />
       </Stack.Navigator>
     );
   } else {

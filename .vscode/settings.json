@@ -9,7 +9,9 @@
     ["className\\s*=\\s*{\"([^\"]*)\"}"],
     ["className\\s*=\\s*{'([^']*)'}"],
     ["tw`([^`]*)`"],
-    ["tw\\(\"([^\"]*)\"\\)"]
+    ["tw\\(\"([^\"]*)\"\\)"],
+    ["[Ss]tyles?\\s*=\\s*\\{([\\s\\S]*?)\\n\\}", "[\"'`]([^\"'`]+)[\"'`]"],
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]+)[\"'`]"]
   ],
   "tailwindCSS.classAttributes": ["class", "className", "tw"],
   "editor.quickSuggestions": {

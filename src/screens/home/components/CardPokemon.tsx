@@ -7,8 +7,11 @@ import Animated, {
     withSpring,
     withTiming,
 } from 'react-native-reanimated'
+import { MaterialIcons } from '@react-native-vector-icons/material-icons'
 import { PokemonCard } from '@/api/pokemonTcg'
 import ProgressiveImage from '@/components/ProgressiveImage'
+import { navigate } from '@/utils/navigationUtils'
+import SCREEN_NAME from '@/utils/screenName'
 
 const TYPE_COLORS: Record<string, string> = {
     Fire: '#F08030',
@@ -23,6 +26,20 @@ const TYPE_COLORS: Record<string, string> = {
     Dragon: '#7038F8',
     Colorless: '#D6D6C2',
 }
+
+const TYPE_ICONS = {
+    Fire: 'local-fire-department',
+    Water: 'water-drop',
+    Grass: 'grass',
+    Lightning: 'bolt',
+    Psychic: 'psychology',
+    Fighting: 'sports-martial-arts',
+    Darkness: 'dark-mode',
+    Metal: 'hardware',
+    Fairy: 'auto-awesome',
+    Dragon: 'rocket-launch',
+    Colorless: 'circle',
+} as const
 
 const RARITY_COLORS: Record<string, string> = {
     Common: '#9CA3AF',
@@ -72,6 +89,9 @@ const CardPokemon = ({ data, index = 0, onPress }: Props) => {
     const handlePressIn = () => {
         scale.value = withSpring(0.96, { damping: 14, stiffness: 220 })
         elevation.value = withTiming(4, { duration: 180 })
+
+
+
     }
 
     const handlePressOut = () => {
@@ -82,10 +102,10 @@ const CardPokemon = ({ data, index = 0, onPress }: Props) => {
     return (
         <View style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
             <Animated.View
-                // entering={FadeInDown.delay(index * 70)
-                //     .duration(380)
-                //     .springify()
-                //     .damping(16)}
+                entering={FadeInDown.delay(index * 70)
+                    .duration(380)
+                    .springify()
+                    .damping(16)}
             >
                 <Animated.View
                     style={[
@@ -99,92 +119,102 @@ const CardPokemon = ({ data, index = 0, onPress }: Props) => {
                         animatedStyle,
                     ]}
                 >
-                <AnimatedPressable
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    onPress={() => onPress?.(data)}
-                    style={{
-                        backgroundColor: '#1f2438',
-                        borderWidth: 1,
-                        borderColor: `${glowColor}55`,
-                        borderRadius: 16,
-                        overflow: 'hidden',
-                    }}
-                >
-                <View style={{ position: 'relative' }}>
-                    <ProgressiveImage
-                        style={{ width: CARD_WIDTH, height: IMAGE_HEIGHT }}
-                        source={{ uri: data.images?.large ?? data.images?.small }}
-                        thumbnailSource={
-                            data.images?.small ? { uri: data.images.small } : undefined
-                        }
-                        resizeMode="cover"
-                    />
-
-                    {data.hp && (
-                        <View className="absolute top-2 left-2 bg-black/70 px-2 py-0.5 rounded-full flex-row items-center">
-                            <Text className="text-red-400 font-bold text-[9px] mr-1">HP</Text>
-                            <Text className="text-white font-bold text-[11px]">{data.hp}</Text>
-                        </View>
-                    )}
-
-                    {data.rarity && (
-                        <View
-                            className="absolute top-2 right-2 px-2 py-0.5 rounded-full"
-                            style={{ backgroundColor: `${rarityColor}E6` }}
-                        >
-                            <Text className="text-white font-bold text-[8px] uppercase tracking-wide">
-                                {data.rarity.replace('Rare ', '')}
-                            </Text>
-                        </View>
-                    )}
-
-                    {marketPrice !== null && (
-                        <View className="absolute bottom-2 right-2 bg-yellow-400 px-2 py-0.5 rounded-md flex-row items-center">
-                            <Text className="text-black font-extrabold text-[10px]">
-                                ${marketPrice.toFixed(2)}
-                            </Text>
-                        </View>
-                    )}
-                </View>
-
-                <View className="px-2.5 py-2">
-                    <Text
-                        numberOfLines={1}
-                        className="text-white font-bold text-[13px]"
+                    <AnimatedPressable
+                        onPressIn={handlePressIn}
+                        onPressOut={handlePressOut}
+                        onPress={() => {
+                            onPress?.(data);
+                            navigate(SCREEN_NAME.DETAIL_POKEMON, {
+                                data: data
+                            })
+                        }}
+                        style={{
+                            backgroundColor: '#1f2438',
+                            borderWidth: 1,
+                            borderColor: `${glowColor}55`,
+                            borderRadius: 16,
+                            overflow: 'hidden',
+                        }}
                     >
-                        {data.name}
-                    </Text>
+                        <View style={{ position: 'relative' }}>
+                            <ProgressiveImage
+                                style={{ width: CARD_WIDTH, height: IMAGE_HEIGHT }}
+                                source={{ uri: data.images?.large ?? data.images?.small }}
+                                thumbnailSource={
+                                    data.images?.small ? { uri: data.images.small } : undefined
+                                }
+                                resizeMode="cover"
+                            />
 
-                    <View className="flex-row items-center justify-between mt-1.5">
-                        <View className="flex-row flex-1">
-                            {data.types?.slice(0, 3).map(type => (
+                            {data.hp && (
+                                <View className="absolute top-2 left-2 bg-black/70 px-2 py-0.5 rounded-full flex-row items-center">
+                                    <Text className="text-red-400 font-bold text-[9px] mr-1">HP</Text>
+                                    <Text className="text-white font-bold text-[11px]">{data.hp}</Text>
+                                </View>
+                            )}
+
+                            {data.rarity && (
                                 <View
-                                    key={type}
-                                    className="px-1.5 py-0.5 rounded-full mr-1"
-                                    style={{
-                                        backgroundColor: `${TYPE_COLORS[type] ?? '#4B5563'}33`,
-                                        borderWidth: 1,
-                                        borderColor: TYPE_COLORS[type] ?? '#4B5563',
-                                    }}
+                                    className="absolute top-2 right-2 px-2 py-0.5 rounded-full"
+                                    style={{ backgroundColor: `${rarityColor}E6` }}
                                 >
-                                    <Text
-                                        className="text-[8px] font-semibold"
-                                        style={{ color: TYPE_COLORS[type] ?? '#9CA3AF' }}
-                                    >
-                                        {type}
+                                    <Text className="text-white font-bold text-[8px] uppercase tracking-wide">
+                                        {data.rarity.replace('Rare ', '')}
                                     </Text>
                                 </View>
-                            ))}
+                            )}
+
+                            {marketPrice !== null && (
+                                <View className="absolute bottom-2 right-2 bg-yellow-400 px-2 py-0.5 rounded-md flex-row items-center">
+                                    <Text className="text-black font-extrabold text-[10px]">
+                                        ${marketPrice.toFixed(2)}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
-                        {data.number && data.set?.printedTotal && (
-                            <Text className="text-gray-400 text-[9px] font-medium">
-                                #{data.number}/{data.set.printedTotal}
+
+                        <View className="px-2.5 py-2">
+                            <Text
+                                numberOfLines={1}
+                                className="text-white font-bold text-[13px]"
+                            >
+                                {data.name}
                             </Text>
-                        )}
-                    </View>
-                </View>
-                </AnimatedPressable>
+
+                            <View className="flex-row items-center justify-between mt-1.5">
+                                <View className="flex-row flex-1">
+                                    {data.types?.map(type => (
+                                        <View
+                                            key={type}
+                                            className="flex-row items-center px-1.5 py-0.5 rounded-full mr-1"
+                                            style={{
+                                                backgroundColor: `${TYPE_COLORS[type] ?? '#4B5563'}33`,
+                                                borderWidth: 1,
+                                                borderColor: TYPE_COLORS[type] ?? '#4B5563',
+                                            }}
+                                        >
+                                            <MaterialIcons
+                                                name={TYPE_ICONS[type as keyof typeof TYPE_ICONS] ?? 'help-outline'}
+                                                size={8}
+                                                color={TYPE_COLORS[type] ?? '#9CA3AF'}
+                                            />
+                                            <Text
+                                                className="text-[8px] font-semibold ml-0.5"
+                                                style={{ color: TYPE_COLORS[type] ?? '#9CA3AF' }}
+                                            >
+                                                {type}
+                                            </Text>
+                                        </View>
+                                    ))}
+                                </View>
+                                {data.number && data.set?.printedTotal && (
+                                    <Text className="text-gray-400 text-[9px] font-medium">
+                                        #{data.number}/{data.set.printedTotal}
+                                    </Text>
+                                )}
+                            </View>
+                        </View>
+                    </AnimatedPressable>
                 </Animated.View>
             </Animated.View>
         </View>
