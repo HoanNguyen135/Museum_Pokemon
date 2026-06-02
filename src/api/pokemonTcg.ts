@@ -143,6 +143,72 @@ export async function getPokemonCards({
   return response.json();
 }
 
+export type PokemonSet = {
+  id: string;
+  name: string;
+  series?: string;
+  printedTotal?: number;
+  total?: number;
+  releaseDate?: string;
+  updatedAt?: string;
+  legalities?: Record<string, string>;
+  ptcgoCode?: string;
+  images?: {
+    symbol?: string;
+    logo?: string;
+  };
+};
+
+export type GetSetsParams = {
+  apiKey?: string;
+  page?: number;
+  pageSize?: number;
+  query?: string;
+  orderBy?: string;
+};
+
+export type SetsResponse = {
+  data: PokemonSet[];
+  page: number;
+  pageSize: number;
+  count: number;
+  totalCount: number;
+};
+
+export async function getPokemonSets({
+  apiKey,
+  page = 1,
+  pageSize = 20,
+  query,
+  orderBy = '-releaseDate',
+}: GetSetsParams = {}): Promise<SetsResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(Math.min(pageSize, 250)),
+    orderBy,
+  });
+
+  if (query) {
+    params.set('q', query);
+  }
+
+  const headers: Record<string, string> = {};
+
+  if (apiKey) {
+    headers['X-Api-Key'] = apiKey;
+  }
+
+  const response = await fetch(`${BASE_URL}/sets?${params.toString()}`, {
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Pokemon TCG API failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getPokemonCardById({
   apiKey,
   id,
