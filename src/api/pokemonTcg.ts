@@ -1,4 +1,49 @@
 const BASE_URL = 'https://api.pokemontcg.io/v2';
+const API_KEY_HEADER = 'X-Api-Key';
+const DEFAULT_TIMEOUT_MS = 15_000;
+const ERROR_PREFIX = 'Pokemon TCG API';
+
+// ─── Shared fetch helper ────────────────────────────────────────────────
+
+async function apiFetch<T>(
+  path: string,
+  options: {
+    apiKey?: string;
+    timeoutMs?: number;
+  } = {},
+): Promise<T> {
+  const { apiKey, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const headers: Record<string, string> = {};
+    if (apiKey) {
+      headers[API_KEY_HEADER] = apiKey;
+    }
+
+    const response = await fetch(path, {
+      headers,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`${ERROR_PREFIX} failed with status ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error(`${ERROR_PREFIX} request timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ─── Types ───────────────────────────────────────────────────────────────
 
 export type PokemonCard = {
   id: string;
@@ -104,45 +149,6 @@ export type CardResponse = {
   data: PokemonCard;
 };
 
-export async function getPokemonCards({
-  apiKey,
-  page = 1,
-  pageSize = 20,
-  query,
-  orderBy = 'name',
-  select,
-}: GetCardsParams = {}): Promise<CardsResponse> {
-  const params = new URLSearchParams({
-    page: String(page),
-    pageSize: String(Math.min(pageSize, 250)),
-    orderBy,
-  });
-
-  if (query) {
-    params.set('q', query);
-  }
-
-  if (select?.length) {
-    params.set('select', select.join(','));
-  }
-
-  const headers: Record<string, string> = {};
-
-  if (apiKey) {
-    headers['X-Api-Key'] = apiKey;
-  }
-
-  const response = await fetch(`${BASE_URL}/cards?${params.toString()}`, {
-    headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Pokemon TCG API failed with status ${response.status}`);
-  }
-
-  return response.json();
-}
-
 export type PokemonSet = {
   id: string;
   name: string;
@@ -175,6 +181,28 @@ export type SetsResponse = {
   totalCount: number;
 };
 
+// ─── API Functions ────────────────────────────────────────────────────────
+
+export async function getPokemonCards({
+  apiKey,
+  page = 1,
+  pageSize = 20,
+  orderBy = 'name',
+  select,
+}: GetCardsParams = {}): Promise<CardsResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(Math.min(pageSize, 250)),
+    orderBy,
+  });
+
+  if (select?.length) {
+    params.set('select', select.join(','));
+  }
+
+  return apiFetch(`${BASE_URL}/cards?${params.toString()}`, { apiKey });
+}
+
 export async function getPokemonSets({
   apiKey,
   page = 1,
@@ -192,21 +220,7 @@ export async function getPokemonSets({
     params.set('q', query);
   }
 
-  const headers: Record<string, string> = {};
-
-  if (apiKey) {
-    headers['X-Api-Key'] = apiKey;
-  }
-
-  const response = await fetch(`${BASE_URL}/sets?${params.toString()}`, {
-    headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Pokemon TCG API failed with status ${response.status}`);
-  }
-
-  return response.json();
+  return apiFetch(`${BASE_URL}/sets?${params.toString()}`, { apiKey });
 }
 
 export async function getPokemonCardById({
@@ -216,21 +230,9 @@ export async function getPokemonCardById({
   apiKey?: string;
   id: string;
 }): Promise<PokemonCard> {
-  const headers: Record<string, string> = {};
-
-  if (apiKey) {
-    headers['X-Api-Key'] = apiKey;
-  }
-
-  const response = await fetch(`${BASE_URL}/cards/${id}`, {
-    headers,
+  const cardResponse = await apiFetch<CardResponse>(`${BASE_URL}/cards/${id}`, {
+    apiKey,
   });
-
-  if (!response.ok) {
-    throw new Error(`Pokemon TCG API failed with status ${response.status}`);
-  }
-
-  const cardResponse: CardResponse = await response.json();
 
   return cardResponse.data;
 }

@@ -33,6 +33,5 @@ export const CARD_SELECT_FIELDS = [
   'set.legalities',
   'set.images',
   'images',
-  'prices',
   'tcgplayer',
 ];

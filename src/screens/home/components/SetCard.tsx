@@ -1,15 +1,12 @@
 import { View, Text, Dimensions, Pressable } from 'react-native';
 import React from 'react';
-import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { MaterialIcons } from '@react-native-vector-icons/material-icons';
 import { PokemonSet } from '@/api/pokemonTcg';
 import ProgressiveImage from '@/components/ProgressiveImage';
+import { useScaleAnimation } from '@/utils/useScaleAnimation';
+import { CARD_ENTRY_ANIMATION } from './CardPokemon';
+import Colors from '@/constants/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -27,58 +24,41 @@ type Props = {
 const SERIES_COLORS: Record<string, string> = {
   Base: '#A8A878',
   Jungle: '#78C850',
-  Fossil: '#7038F8',
+  Fossil: Colors.typeDragon,
   'Black & White': '#444444',
   XY: '#EC4899',
-  'Sun & Moon': '#F59E0B',
-  'Sword & Shield': '#60A5FA',
-  'Scarlet & Violet': '#F472B6',
-  EX: '#A78BFA',
-  'HeartGold & SoulSilver': '#FBBF24',
-  Platinum: '#9CA3AF',
-  'Diamond & Pearl': '#34D399',
-  Ruby: '#EF4444',
+  'Sun & Moon': Colors.warning,
+  'Sword & Shield': Colors.accentBlue,
+  'Scarlet & Violet': Colors.accentPink,
+  EX: Colors.accentPurple,
+  'HeartGold & SoulSilver': Colors.rarityPromo,
+  Platinum: Colors.textMuted,
+  'Diamond & Pearl': Colors.accentGreen,
+  Ruby: Colors.error,
   Sapphire: '#3B82F6',
-  'Nintendo Black Star Promos': '#FFCB05',
+  'Nintendo Black Star Promos': Colors.accentYellow,
 };
 
+// Reusable shadow offset
+const SHADOW_OFFSET = { width: 0, height: 6 };
+
 const SetCard = ({ data, index = 0, onPress }: Props) => {
-  const scale = useSharedValue(1);
-  const elevation = useSharedValue(0);
+  const { handlers, animatedStyle } = useScaleAnimation();
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { translateY: -elevation.value }],
-  }));
-
-  const seriesColor = data.series ? (SERIES_COLORS[data.series] ?? '#7038F8') : '#7038F8';
+  const seriesColor = data.series ? (SERIES_COLORS[data.series] ?? Colors.typeDragon) : Colors.typeDragon;
 
   const releaseYear = data.releaseDate
     ? new Date(data.releaseDate).getFullYear()
     : null;
 
-  const handlePressIn = () => {
-    scale.value = withSpring(0.96, { damping: 14, stiffness: 220 });
-    elevation.value = withTiming(4, { duration: 180 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 12, stiffness: 180 });
-    elevation.value = withTiming(0, { duration: 220 });
-  };
-
   return (
     <View style={{ width: SET_CARD_WIDTH, height: SET_CARD_HEIGHT }}>
-      <Animated.View
-        entering={FadeInDown.delay(index * 70)
-          .duration(380)
-          .springify()
-          .damping(16)}
-      >
+      <Animated.View entering={CARD_ENTRY_ANIMATION(index)}>
         <Animated.View
           style={[
             {
               shadowColor: seriesColor,
-              shadowOffset: { width: 0, height: 6 },
+              shadowOffset: SHADOW_OFFSET,
               shadowOpacity: 0.45,
               shadowRadius: 12,
               elevation: 10,
@@ -87,11 +67,11 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
           ]}
         >
           <AnimatedPressable
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
+            onPressIn={handlers.onPressIn}
+            onPressOut={handlers.onPressOut}
             onPress={() => onPress?.(data)}
             style={{
-              backgroundColor: '#1f2438',
+              backgroundColor: Colors.cardBackground,
               borderWidth: 1,
               borderColor: `${seriesColor}55`,
               borderRadius: 16,
@@ -165,7 +145,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
                   )}
                   {releaseYear && (
                     <View className="flex-row items-center">
-                      <MaterialIcons name="calendar-today" size={10} color="#9CA3AF" />
+                      <MaterialIcons name="calendar-today" size={10} color={Colors.textMuted} />
                       <Text className="text-gray-400 text-[10px] ml-1">
                         {releaseYear}
                       </Text>
@@ -176,7 +156,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
                   <View className="flex-row items-center">
                     <View
                       className="w-1.5 h-1.5 rounded-full mr-1"
-                      style={{ backgroundColor: '#34D399' }}
+                      style={{ backgroundColor: Colors.accentGreen }}
                     />
                     <Text className="text-green-400 text-[9px] font-medium">
                       {Object.keys(data.legalities).length} formats

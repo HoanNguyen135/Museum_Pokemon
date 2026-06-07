@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
+  Image,
   Pressable,
   Text,
   TextInput,
@@ -16,8 +17,10 @@ import SetCard from '@/screens/home/components/SetCard';
 import LoadingScreen from '@/components/LoadingScreen';
 import SafeViewMain from '@/components/SafeViewMain';
 import { CARD_SELECT_FIELDS } from '@/constants';
+import { usePaginatedFetch } from '@/utils/usePaginatedFetch';
 import { navigate } from '@/utils/navigationUtils';
 import SCREEN_NAME from '@/utils/screenName';
+import Colors from '@/constants/colors';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const NUM_COLUMNS = 2;
@@ -29,9 +32,7 @@ const PAGE_SIZE = 20;
 export type FullListMode = 'MostValuable' | 'LatestSets';
 
 type FullListScreenProps = {
-  navigation: {
-    goBack: () => void;
-  };
+  navigation: { goBack: () => void };
   route: {
     params?: {
       mode?: FullListMode;
@@ -42,127 +43,42 @@ type FullListScreenProps = {
 
 const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
   const mode = route.params?.mode ?? 'MostValuable';
-  const title = route.params?.title ?? (mode === 'MostValuable' ? 'Most Valuable Cards' : 'Latest Sets');
+  const title =
+    route.params?.title ?? (mode === 'MostValuable' ? 'Most Valuable Cards' : 'Latest Sets');
 
   const isCardMode = mode === 'MostValuable';
 
-  // ─── State ──────────────────────────────────────────────────────────
-  const [cards, setCards] = useState<PokemonCard[]>([]);
-  const [sets, setSets] = useState<PokemonSet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoadMore, setLoadMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [searchText, setSearchText] = useState('');
-  const [hasMore, setHasMore] = useState(true);
-
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchInputRef = useRef<TextInput>(null);
-
-  // ─── Data fetching ──────────────────────────────────────────────────
-  const fetchData = useCallback(
-    async (pageNum: number, query?: string) => {
-      try {
-        if (isCardMode) {
-          const response = await getPokemonCards({
-            apiKey: process.env.POKEMON_TCG_API_KEY,
-            page: pageNum,
-            pageSize: PAGE_SIZE,
-            orderBy: '-tcgplayer.prices.holofoil.mid',
-            select: CARD_SELECT_FIELDS,
-          });
-
-          if (pageNum === 1) {
-            setCards(response.data);
-          } else {
-            setCards(prev => [...prev, ...response.data]);
-          }
-
-          // Check if we've reached the end
-          const loadedCount = pageNum * PAGE_SIZE;
-          setHasMore(loadedCount < response.totalCount);
-        } else {
-          const queryParts: string[] = [];
-          if (query?.trim()) {
-            queryParts.push(`name:"${query.trim()}"*`);
-          }
-
-          const q = queryParts.join(' AND ') || undefined;
-
-          const response = await getPokemonSets({
-            apiKey: process.env.POKEMON_TCG_API_KEY,
-            page: pageNum,
-            pageSize: PAGE_SIZE,
-            query: q,
-            orderBy: '-releaseDate',
-          });
-
-          if (pageNum === 1) {
-            setSets(response.data);
-          } else {
-            setSets(prev => [...prev, ...response.data]);
-          }
-
-          const loadedCount = pageNum * PAGE_SIZE;
-          setHasMore(loadedCount < response.totalCount);
+  // Fetcher — card mode now properly passes the search query
+  const fetcher = useCallback(
+    (params: { page: number; pageSize: number; query?: string }) => {
+      if (isCardMode) {
+        const queryParts: string[] = ['tcgplayer.prices.*:*'];
+        if (params.query) {
+          queryParts.push(`name:"${params.query}"*`);
         }
-
-        setError(null);
-      } catch (apiError) {
-        setError(
-          apiError instanceof Error ? apiError.message : 'Could not load data.',
-        );
+        return getPokemonCards({
+          apiKey: process.env.POKEMON_TCG_API_KEY,
+          page: params.page,
+          pageSize: params.pageSize,
+          query: queryParts.join(' AND '),
+          orderBy: '-tcgplayer.prices.holofoil.mid',
+          select: CARD_SELECT_FIELDS,
+        });
       }
+      return getPokemonSets({
+        apiKey: process.env.POKEMON_TCG_API_KEY,
+        page: params.page,
+        pageSize: params.pageSize,
+        query: params.query ? `name:"${params.query}"*` : undefined,
+        orderBy: '-releaseDate',
+      });
     },
     [isCardMode],
   );
 
-  // Initial load
-  useEffect(() => {
-    setLoading(true);
-    fetchData(1).finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error, isLoadMore, hasMore, searchText, setSearchText, loadMore } =
+    usePaginatedFetch<PokemonCard | PokemonSet>(fetcher as any, { pageSize: PAGE_SIZE });
 
-  // ─── Search with debounce ───────────────────────────────────────────
-  const onSearchChange = useCallback(
-    (text: string) => {
-      setSearchText(text);
-
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-
-      debounceRef.current = setTimeout(() => {
-        setPage(1);
-        setCards([]);
-        setSets([]);
-        setLoading(true);
-        fetchData(1, text).finally(() => setLoading(false));
-      }, 500);
-    },
-    [fetchData],
-  );
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, []);
-
-  // ─── Load more ──────────────────────────────────────────────────────
-  const onLoadMore = useCallback(() => {
-    if (isLoadMore || !hasMore || loading) return;
-
-    const nextPage = page + 1;
-    setLoadMore(true);
-    setPage(nextPage);
-    fetchData(nextPage, searchText).finally(() => setLoadMore(false));
-  }, [page, isLoadMore, hasMore, loading, searchText, fetchData]);
-
-  // ─── Press handlers ─────────────────────────────────────────────────
   const onCardPress = useCallback((card: PokemonCard) => {
     navigate(SCREEN_NAME.DETAIL_POKEMON, { data: card });
   }, []);
@@ -171,8 +87,6 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
     navigate(SCREEN_NAME.SET_CARDS, { data: set });
   }, []);
 
-  // ─── Render data ────────────────────────────────────────────────────
-  const data = isCardMode ? cards : sets;
   const dataCount = data.length;
 
   if (loading && dataCount === 0) {
@@ -187,7 +101,7 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
           onPress={navigation.goBack}
           className="w-9 h-9 rounded-full bg-[#1F2438] border border-[#37415F] items-center justify-center"
         >
-          <MaterialIcons name="arrow-back" size={22} color="#FFFFFF" />
+          <MaterialIcons name="arrow-back" size={22} color={Colors.textPrimary} />
         </Pressable>
         <View className="flex-1 ml-3">
           <Text className="text-white font-bold text-lg" numberOfLines={1}>
@@ -202,26 +116,23 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
       {/* Search bar */}
       <View className="mx-4 mb-3">
         <View className="flex-row items-center bg-[#1F2438] border border-[#37415F] rounded-xl px-3 h-11">
-          <MaterialIcons name="search" size={20} color="#6B7280" />
+          <MaterialIcons name="search" size={20} color={Colors.textPlaceholder} />
           <TextInput
-            ref={searchInputRef}
             className="flex-1 ml-2 text-white text-sm"
-            placeholder={
-              isCardMode ? 'Search cards by name...' : 'Search sets by name...'
-            }
-            placeholderTextColor="#6B7280"
+            placeholder={isCardMode ? 'Search cards by name...' : 'Search sets by name...'}
+            placeholderTextColor={Colors.textPlaceholder}
             value={searchText}
-            onChangeText={onSearchChange}
+            onChangeText={setSearchText}
             autoCorrect={false}
             autoCapitalize="none"
             returnKeyType="search"
           />
           {searchText.length > 0 && (
             <Pressable
-              onPress={() => onSearchChange('')}
+              onPress={() => setSearchText('')}
               className="w-6 h-6 rounded-full bg-gray-600 items-center justify-center"
             >
-              <MaterialIcons name="close" size={14} color="#FFFFFF" />
+              <MaterialIcons name="close" size={14} color={Colors.textPrimary} />
             </Pressable>
           )}
         </View>
@@ -244,7 +155,7 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
         }}
         numColumns={NUM_COLUMNS}
         onEndReachedThreshold={0.5}
-        onEndReached={onLoadMore}
+        onEndReached={loadMore}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
           <View
@@ -256,17 +167,9 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
             }}
           >
             {isCardMode ? (
-              <CardPokemon
-                data={item as PokemonCard}
-                index={index}
-                onPress={onCardPress}
-              />
+              <CardPokemon data={item as PokemonCard} index={index} onPress={onCardPress} />
             ) : (
-              <SetCard
-                data={item as PokemonSet}
-                index={index}
-                onPress={onSetPress}
-              />
+              <SetCard data={item as PokemonSet} index={index} onPress={onSetPress} />
             )}
           </View>
         )}
@@ -276,9 +179,7 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
               <MaterialIcons name="search-off" size={48} color="#4B5563" />
               <Text className="text-gray-500 text-sm mt-3">No results found</Text>
               {searchText.length > 0 && (
-                <Text className="text-gray-600 text-xs mt-1">
-                  Try a different search term
-                </Text>
+                <Text className="text-gray-600 text-xs mt-1">Try a different search term</Text>
               )}
             </View>
           ) : null
@@ -286,7 +187,7 @@ const FullListScreen = ({ navigation, route }: FullListScreenProps) => {
         ListFooterComponent={() =>
           isLoadMore ? (
             <View className="py-6 items-center">
-              <ActivityIndicator color="#FFCB05" />
+              <ActivityIndicator color={Colors.accentYellow} />
             </View>
           ) : dataCount > 0 && !hasMore ? (
             <View className="py-6 items-center">

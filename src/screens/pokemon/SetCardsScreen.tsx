@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -15,19 +15,20 @@ import CardPokemon from '@/screens/home/components/CardPokemon';
 import LoadingScreen from '@/components/LoadingScreen';
 import SafeViewMain from '@/components/SafeViewMain';
 import { CARD_SELECT_FIELDS } from '@/constants';
+import { usePaginatedFetch } from '@/utils/usePaginatedFetch';
 import { navigate } from '@/utils/navigationUtils';
 import SCREEN_NAME from '@/utils/screenName';
+import Colors from '@/constants/colors';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const NUM_COLUMNS = 2;
 const GRID_PADDING = 12;
 const ITEM_SPACING = 12;
 const ITEM_WIDTH = (SCREEN_WIDTH - GRID_PADDING * 2 - ITEM_SPACING) / NUM_COLUMNS;
+const PAGE_SIZE = 20;
 
 type SetCardsScreenProps = {
-  navigation: {
-    goBack: () => void;
-  };
+  navigation: { goBack: () => void };
   route: {
     params?: {
       data?: PokemonSet;
@@ -38,61 +39,24 @@ type SetCardsScreenProps = {
 const SetCardsScreen = ({ navigation, route }: SetCardsScreenProps) => {
   const setData = route.params?.data;
 
-  const [cards, setCards] = useState<PokemonCard[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoadMore, setLoadMore] = useState(false);
-  const [page, setPage] = useState(1);
+  const fetcher = useMemo(
+    () =>
+      async (params: { page: number; pageSize: number }) =>
+        getPokemonCards({
+          apiKey: process.env.POKEMON_TCG_API_KEY,
+          page: params.page,
+          pageSize: params.pageSize,
+          query: `set.id:${setData?.id}`,
+          orderBy: 'number',
+          select: CARD_SELECT_FIELDS,
+        }),
+    [setData?.id],
+  );
 
-  const pageSize = 20;
-
-  useEffect(() => {
-    loadCards(1);
-  }, [setData?.id]);
-
-  async function loadCards(pageNum: number) {
-    if (!setData?.id) {
-      setError('Set data is missing.');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await getPokemonCards({
-        apiKey: process.env.POKEMON_TCG_API_KEY,
-        page: pageNum,
-        pageSize,
-        query: `set.id:${setData.id}`,
-        orderBy: 'number',
-        select: CARD_SELECT_FIELDS,
-      });
-
-      if (pageNum === 1) {
-        setCards(response.data);
-      } else {
-        setCards(prev => [...prev, ...response.data]);
-      }
-      setError(null);
-    } catch (apiError) {
-      setError(
-        apiError instanceof Error
-          ? apiError.message
-          : 'Could not load cards for this set.',
-      );
-    } finally {
-      setLoading(false);
-      setLoadMore(false);
-    }
-  }
-
-  const onLoadMore = useCallback(() => {
-    if (isLoadMore || cards.length === 0) return;
-
-    const nextPage = page + 1;
-    setLoadMore(true);
-    setPage(nextPage);
-    loadCards(nextPage);
-  }, [page, isLoadMore, cards.length, setData?.id]);
+  const { data: cards, loading, error, isLoadMore, hasMore, loadMore } = usePaginatedFetch(
+    fetcher,
+    { pageSize: PAGE_SIZE },
+  );
 
   const onCardPress = useCallback((card: PokemonCard) => {
     navigate(SCREEN_NAME.DETAIL_POKEMON, { data: card });
@@ -103,16 +67,14 @@ const SetCardsScreen = ({ navigation, route }: SetCardsScreenProps) => {
       <SafeViewMain>
         <Header name="Set Cards" onBack={navigation.goBack} />
         <View className="flex-1 justify-center items-center px-6">
-          <MaterialIcons name="error-outline" size={48} color="#EF4444" />
-          <Text className="text-white text-base text-center mt-4">
-            Set data is missing.
-          </Text>
+          <MaterialIcons name="error-outline" size={48} color={Colors.error} />
+          <Text className="text-white text-base text-center mt-4">Set data is missing.</Text>
         </View>
       </SafeViewMain>
     );
   }
 
-  if (loading) {
+  if (loading && cards.length === 0) {
     return <LoadingScreen />;
   }
 
@@ -130,27 +92,21 @@ const SetCardsScreen = ({ navigation, route }: SetCardsScreenProps) => {
           />
         ) : (
           <View className="w-10 h-10 rounded-lg bg-[#151A2D] items-center justify-center">
-            <MaterialIcons name="collections-bookmark" size={22} color="#FFCB05" />
+            <MaterialIcons name="collections-bookmark" size={22} color={Colors.accentYellow} />
           </View>
         )}
         <View className="ml-3 flex-1">
           <Text className="text-white font-bold text-sm">{setData.name}</Text>
           <View className="flex-row items-center mt-1">
-            {setData.series && (
-              <Text className="text-gray-400 text-xs">{setData.series}</Text>
-            )}
+            {setData.series && <Text className="text-gray-400 text-xs">{setData.series}</Text>}
             {setData.releaseDate && (
-              <Text className="text-gray-500 text-xs ml-2">
-                • {setData.releaseDate}
-              </Text>
+              <Text className="text-gray-500 text-xs ml-2">• {setData.releaseDate}</Text>
             )}
           </View>
         </View>
         {setData.printedTotal && (
           <View className="bg-[#151A2D] px-3 py-1.5 rounded-lg items-center">
-            <Text className="text-yellow-400 font-extrabold text-base">
-              {setData.printedTotal}
-            </Text>
+            <Text className="text-yellow-400 font-extrabold text-base">{setData.printedTotal}</Text>
             <Text className="text-gray-500 text-[9px]">cards</Text>
           </View>
         )}
@@ -173,7 +129,7 @@ const SetCardsScreen = ({ navigation, route }: SetCardsScreenProps) => {
         }}
         numColumns={NUM_COLUMNS}
         onEndReachedThreshold={0.5}
-        onEndReached={onLoadMore}
+        onEndReached={loadMore}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
           <View
@@ -198,7 +154,11 @@ const SetCardsScreen = ({ navigation, route }: SetCardsScreenProps) => {
         ListFooterComponent={() =>
           isLoadMore ? (
             <View className="py-6 items-center">
-              <ActivityIndicator color="#FFCB05" />
+              <ActivityIndicator color={Colors.accentYellow} />
+            </View>
+          ) : cards.length > 0 && !hasMore ? (
+            <View className="py-6 items-center">
+              <Text className="text-gray-500 text-xs">All cards loaded</Text>
             </View>
           ) : (
             <View className="h-6" />
@@ -216,7 +176,7 @@ function Header({ name, onBack }: { name: string; onBack: () => void }) {
         onPress={onBack}
         className="w-9 h-9 rounded-full bg-[#1F2438] border border-[#37415F] items-center justify-center"
       >
-        <MaterialIcons name="arrow-back" size={22} color="#FFFFFF" />
+        <MaterialIcons name="arrow-back" size={22} color={Colors.textPrimary} />
       </Pressable>
       <View className="flex-1 ml-3">
         <Text className="text-white font-bold text-lg" numberOfLines={1}>

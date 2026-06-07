@@ -365,9 +365,8 @@ function getPriceSummaryRows(
 }
 
 function formatCurrency(value: number, currency: 'EUR' | 'USD') {
-  return currency === 'USD'
-    ? `$${value.toFixed(2)}`
-    : `$${value.toFixed(2)}`;
+  const symbol = currency === 'USD' ? '$' : '€';
+  return `${symbol}${value.toFixed(2)}`;
 }
 
 function formatNumber(card: PokemonCard) {
