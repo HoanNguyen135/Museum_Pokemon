@@ -1,14 +1,15 @@
-import { showToast } from '@/utils/toastUtils';
+import {showToast} from '@/utils/toastUtils';
 import I18n from '@/i18n';
 
 export const handleApiError = (error: unknown, customErrorMsg?: string) => {
-  const errorMessage = error instanceof Error ? error.message : I18n.t('CONFIGURE_URL.ERROR');
-  showToast({ message: errorMessage });
+  const errorMessage =
+    error instanceof Error ? error.message : I18n.t('CONFIGURE_URL.ERROR');
+  showToast({message: errorMessage});
   return errorMessage;
 };
 
-export const extractDomain = ({ url }: { url: string }) => {
-  const isValidUrl = checkValidUrl({ url });
+export const extractDomain = ({url}: {url: string}) => {
+  const isValidUrl = checkValidUrl({url});
 
   if (!isValidUrl) {
     return url;
@@ -25,7 +26,7 @@ export const extractDomain = ({ url }: { url: string }) => {
   return url;
 };
 
-export const checkValidUrl = ({ url }: { url: string }) => {
+export const checkValidUrl = ({url}: {url: string}) => {
   try {
     return Boolean(new URL(url));
   } catch (e) {

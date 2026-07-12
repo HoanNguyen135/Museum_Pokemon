@@ -1,9 +1,13 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import {createAsyncThunk} from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/react-native';
 
-import { getMessaging, getToken, hasPermission } from '@react-native-firebase/messaging';
-import { Platform, PermissionsAndroid } from 'react-native';
-import { URL_TYPE } from '@/constants/url';
+import {
+  getMessaging,
+  getToken,
+  hasPermission,
+} from '@react-native-firebase/messaging';
+import {Platform, PermissionsAndroid} from 'react-native';
+import {URL_TYPE} from '@/constants/url';
 import {
   getSystemName,
   getManufacturer,
@@ -14,7 +18,7 @@ import {
   getUniqueId,
 } from 'react-native-device-info';
 
-import { SettingsService } from './settingsService';
+import {SettingsService} from './settingsService';
 import type {
   NotificationSettings,
   NotificationSettingsPayload,
@@ -23,9 +27,9 @@ import type {
 } from './settingsTypes';
 import I18n from '@/i18n';
 
-import { checkValidUrl, extractDomain, handleApiError } from './settingsUtils';
-import { showToast } from '@/utils/toastUtils';
-import { getApp } from '@react-native-firebase/app';
+import {checkValidUrl, extractDomain, handleApiError} from './settingsUtils';
+import {showToast} from '@/utils/toastUtils';
+import {getApp} from '@react-native-firebase/app';
 
 const createSettingsThunk = <TResponse, TPayload>(
   type: string,
@@ -34,7 +38,7 @@ const createSettingsThunk = <TResponse, TPayload>(
 ) => {
   return createAsyncThunk<TResponse, TPayload>(
     type,
-    async (payload, { rejectWithValue }) => {
+    async (payload, {rejectWithValue}) => {
       try {
         return await handler(payload);
       } catch (error) {
@@ -47,18 +51,17 @@ const createSettingsThunk = <TResponse, TPayload>(
 export const settingsActions = {
   setInstallationUrl: createAsyncThunk<InstallationUrls, string>(
     'settings/setInstallationUrl',
-    async (url, { rejectWithValue }) => {
+    async (url, {rejectWithValue}) => {
       try {
-        if (!checkValidUrl({ url })) {
+        if (!checkValidUrl({url})) {
           throw new Error(I18n.t('CONFIGURE_URL.ERROR'));
         }
 
-        const installationUrl = extractDomain({ url });
+        const installationUrl = extractDomain({url});
         const INSTALLATION_URL = `${URL_TYPE}${installationUrl}/`;
         const WEB_SOCKET_URL = `wss://${url}/cable`;
-        const isValid = await SettingsService.verifyInstallationUrl(
-          INSTALLATION_URL,
-        );
+        const isValid =
+          await SettingsService.verifyInstallationUrl(INSTALLATION_URL);
 
         if (!isValid) {
           throw new Error(I18n.t('CONFIGURE_URL.ERROR'));
@@ -74,7 +77,7 @@ export const settingsActions = {
           error instanceof Error
             ? error.message
             : I18n.t('CONFIGURE_URL.ERROR');
-        showToast({ message });
+        showToast({message});
         return rejectWithValue(message);
       }
     },
@@ -94,15 +97,15 @@ export const settingsActions = {
   ),
 
   getChatwootVersion: createSettingsThunk<
-    { version: string },
-    { installationUrl: string }
-  >('settings/getChatwootVersion', ({ installationUrl }) =>
+    {version: string},
+    {installationUrl: string}
+  >('settings/getChatwootVersion', ({installationUrl}) =>
     SettingsService.getChatwootVersion(installationUrl),
   ),
 
-  saveDeviceDetails: createAsyncThunk<{ fcmToken: string }, void>(
+  saveDeviceDetails: createAsyncThunk<{fcmToken: string}, void>(
     'settings/saveDeviceDetails',
-    async (_, { rejectWithValue }) => {
+    async (_, {rejectWithValue}) => {
       try {
         const app = getApp();
 
@@ -153,7 +156,7 @@ export const settingsActions = {
           },
         };
         //await SettingsService.saveDeviceDetails(pushData);
-        return { fcmToken };
+        return {fcmToken};
       } catch (error) {
         Sentry.captureException(error);
         return rejectWithValue(
@@ -165,8 +168,8 @@ export const settingsActions = {
     },
   ),
 
-  removeDevice: createSettingsThunk<void, { pushToken: string }>(
+  removeDevice: createSettingsThunk<void, {pushToken: string}>(
     'settings/removeDevice',
-    ({ pushToken }) => SettingsService.removeDevice({ push_token: pushToken }),
+    ({pushToken}) => SettingsService.removeDevice({push_token: pushToken}),
   ),
 };

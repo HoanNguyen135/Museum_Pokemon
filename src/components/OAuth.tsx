@@ -1,12 +1,11 @@
-import { Image, Text, View } from "react-native";
-import CustomButton from "./CuttomButton";
-import icons from "@/assets/icons";
-import { showToast } from "@/utils/toastUtils";
-import { handleSignUpOrSignUpWithGoogle } from "@/hooks/authGoogle";
-import { useAppDispatch } from "@/hook";
-import { User } from "@/types/User";
-import { setDataUser } from "@/store/auth/authSlice";
-
+import {Image, Text, View} from 'react-native';
+import CustomButton from './CuttomButton';
+import icons from '@/assets/icons';
+import {showToast} from '@/utils/toastUtils';
+import {handleSignUpOrSignUpWithGoogle} from '@/hooks/authGoogle';
+import {useAppDispatch} from '@/hook';
+import {User} from '@/types/User';
+import {setDataUser} from '@/store/auth/authSlice';
 
 const OAuth = () => {
   const dispatch = useAppDispatch();
@@ -14,7 +13,7 @@ const OAuth = () => {
   const handleGoogleSignIn = async () => {
     const data = await handleSignUpOrSignUpWithGoogle(false);
 
-    if(data?.status == true){
+    if (data?.status == true) {
       const googleUser = data?.data?.user;
 
       const user: User = {
@@ -32,9 +31,9 @@ const OAuth = () => {
       };
 
       dispatch(setDataUser(user));
-      showToast({ message: data?.message ?? 'Signed in successfully' });
+      showToast({message: data?.message ?? 'Signed in successfully'});
     } else if (data?.message) {
-      showToast({ message: data.message });
+      showToast({message: data.message});
     }
   };
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 type PaginatedResponse<T> = {
   data: T[];
@@ -40,7 +40,7 @@ export function usePaginatedFetch<T>(
   fetcher: Fetcher<T>,
   options: UsePaginatedFetchOptions = {},
 ): UsePaginatedFetchResult<T> {
-  const { pageSize = 20, initialPage = 1, debounceMs = 500 } = options;
+  const {pageSize = 20, initialPage = 1, debounceMs = 500} = options;
 
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);

@@ -1,4 +1,4 @@
-import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
+import {Action, configureStore, ThunkAction} from '@reduxjs/toolkit';
 
 import {
   persistStore,
@@ -11,7 +11,7 @@ import {
   REHYDRATE,
 } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { appReducer } from './reducer';
+import {appReducer} from './reducer';
 // import logger from 'redux-logger';
 
 const CURRENT_VERSION = 2;
@@ -52,7 +52,7 @@ export const store = configureStore({
     shouldLoadDebugger
       ? getDefaultEnhancers().concat(reactotronInstance.createEnhancer!())
       : getDefaultEnhancers(),
-   middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],

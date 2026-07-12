@@ -1,27 +1,27 @@
-import React, { PropsWithChildren } from 'react';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import React, {PropsWithChildren} from 'react';
+import {Platform, Pressable, StyleSheet} from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { BlurView, BlurViewProps } from '@react-native-community/blur';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { RouteProp } from '@react-navigation/native';
-import { MaterialIcons } from '@react-native-vector-icons/material-icons';
+import {BlurView, BlurViewProps} from '@react-native-community/blur';
+import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
+import {RouteProp} from '@react-navigation/native';
+import {MaterialIcons} from '@react-native-vector-icons/material-icons';
 // import { useHaptic, useScaleAnimation, useTabBarHeight } from '@/utils';
 
-import { TabParamList } from './AppTabs';
-import { useTabBarHeight } from '@/utils/common';
-import { useScaleAnimation } from '@/utils/useScaleAnimation';
+import {TabParamList} from './AppTabs';
+import {useTabBarHeight} from '@/utils/common';
+import {useScaleAnimation} from '@/utils/useScaleAnimation';
 import SCREEN_NAME from '@/utils/screenName';
 // import { useAppSelector } from '@/hooks';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-const tabExitSpringConfig = { damping: 20, stiffness: 360, mass: 1 };
-const tabEnterSpringConfig = { damping: 30, stiffness: 360, mass: 1 };
+const tabExitSpringConfig = {damping: 20, stiffness: 360, mass: 1};
+const tabEnterSpringConfig = {damping: 30, stiffness: 360, mass: 1};
 
 type TabBarIconsProps = {
   focused: boolean;
@@ -29,10 +29,10 @@ type TabBarIconsProps = {
 };
 
 const TAB_ICON_SIZE = 29;
-const TAB_ICON_COLOR_UNFOCUSED  = '#1F2937';
-const TAB_ICON_COLOR_FOCUSED  = '#9CA3AF';
+const TAB_ICON_COLOR_UNFOCUSED = '#1F2937';
+const TAB_ICON_COLOR_FOCUSED = '#9CA3AF';
 
-const TabBarIcons = ({ focused, route }: TabBarIconsProps) => {
+const TabBarIcons = ({focused, route}: TabBarIconsProps) => {
   const color = focused ? TAB_ICON_COLOR_FOCUSED : TAB_ICON_COLOR_UNFOCUSED;
   switch (route.name) {
     case SCREEN_NAME.HOME_SCREEN:
@@ -51,10 +51,10 @@ const TabBarIcons = ({ focused, route }: TabBarIconsProps) => {
 type TabBarBackgroundProps = BlurViewProps & PropsWithChildren;
 
 const TabBarBackground = (props: TabBarBackgroundProps) => {
-  const { children, style, blurAmount, blurType } = props;
+  const {children, style, blurAmount, blurType} = props;
 
   return Platform.OS === 'ios' ? (
-    <AnimatedBlurView {...{ blurAmount, blurType }} style={[style]}>
+    <AnimatedBlurView {...{blurAmount, blurType}} style={[style]}>
       {children}
     </AnimatedBlurView>
   ) : (
@@ -64,19 +64,19 @@ const TabBarBackground = (props: TabBarBackgroundProps) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TabItem = (props: any) => {
-  const { handlers, animatedStyle } = useScaleAnimation();
+  const {handlers, animatedStyle} = useScaleAnimation();
 
-  const { onPress, onLongPress, isFocused, options, route } = props;
+  const {onPress, onLongPress, isFocused, options, route} = props;
 
   // Memoize hitSlop to prevent new object reference on every render
   const hitSlop = React.useMemo(
-    () => ({ top: 2, left: 10, right: 10, bottom: 10 }),
+    () => ({top: 2, left: 10, right: 10, bottom: 10}),
     [],
   );
 
   // Use stable object reference for accessibilityState when not focused
   const accessibilityState = React.useMemo(
-    () => (isFocused ? { selected: true } : {}),
+    () => (isFocused ? {selected: true} : {}),
     [isFocused],
   );
 
@@ -90,8 +90,7 @@ const TabItem = (props: any) => {
         accessibilityLabel={options.tabBarAccessibilityLabel}
         testID={options.tabBarTestID}
         onPress={onPress}
-        onLongPress={onLongPress}
-      >
+        onLongPress={onLongPress}>
         <TabBarIcons focused={isFocused} route={route} />
       </Pressable>
     </Animated.View>
@@ -108,7 +107,7 @@ export const BottomTabBar = ({
   // Memoize press handlers using useCallback
   const createPressHandler = React.useCallback(
     (
-      route: { key: string; name: string; params?: object },
+      route: {key: string; name: string; params?: object},
       isFocused: boolean,
     ) => {
       return () => {
@@ -128,7 +127,7 @@ export const BottomTabBar = ({
 
   // Memoize long press handler
   const createLongPressHandler = React.useCallback(
-    (route: { key: string; name: string; params?: object }) => {
+    (route: {key: string; name: string; params?: object}) => {
       return () => {
         navigation.emit({
           type: 'tabLongPress',
@@ -144,20 +143,17 @@ export const BottomTabBar = ({
       blurAmount={25}
       blurType="light"
       style={Platform.select({
-        ios: [styles.tabBarBase, styles.tabBarIOS, { height: tabBarHeight }],
+        ios: [styles.tabBarBase, styles.tabBarIOS, {height: tabBarHeight}],
         android: [
           styles.tabBarBase,
           styles.tabBarAndroid,
-          { height: tabBarHeight },
-          {
-            
-          }
+          {height: tabBarHeight},
+          {},
         ],
-      })}
-    >
+      })}>
       <Animated.View style={styles.topBorder} />
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
+        const {options} = descriptors[route.key];
         const isFocused = state.index === index;
 
         return (
@@ -185,17 +181,17 @@ const styles = StyleSheet.create({
     paddingRight: 71,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    backgroundColor: '#313961'
+    backgroundColor: '#313961',
   },
   tabBarIOS: {
     paddingTop: 11,
     paddingBottom: 32,
-     backgroundColor: '#313961'
+    backgroundColor: '#313961',
   },
   tabBarAndroid: {
     paddingTop: 11,
     paddingBottom: 11,
-    backgroundColor: '#313961'
+    backgroundColor: '#313961',
   },
   topBorder: {
     position: 'absolute',

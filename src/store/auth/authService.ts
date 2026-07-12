@@ -1,4 +1,4 @@
-import { LoginPayload, LoginResponse } from './authTypes';
+import {LoginPayload, LoginResponse} from './authTypes';
 
 export class AuthService {
   static async login(credentials: LoginPayload): Promise<LoginResponse> {

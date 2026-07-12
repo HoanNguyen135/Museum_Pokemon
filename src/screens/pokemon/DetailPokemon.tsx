@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   Linking,
   Pressable,
@@ -7,11 +7,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import { MaterialIcons } from '@react-native-vector-icons/material-icons';
+import {MaterialIcons} from '@react-native-vector-icons/material-icons';
 
-import { getPokemonCardById, PokemonCard } from '@/api/pokemonTcg';
+import {getPokemonCardById, PokemonCard} from '@/api/pokemonTcg';
 import LoadingScreen from '@/components/LoadingScreen';
-import { PokemonCardAnimation } from '@/components/PokemonCardAnimation';
+import {PokemonCardAnimation} from '@/components/PokemonCardAnimation';
 import SafeViewMain from '@/components/SafeViewMain';
 import TextCustom from '@/components/TextCustom';
 
@@ -31,9 +31,11 @@ type PriceRow = {
   value: string;
 };
 
-const DetailPokemon = ({ navigation, route }: DetailPokemonProps) => {
+const DetailPokemon = ({navigation, route}: DetailPokemonProps) => {
   const routeCard = route.params?.data;
-  const [dataDetailCard, setDataDetailCard] = useState<PokemonCard | null>(null);
+  const [dataDetailCard, setDataDetailCard] = useState<PokemonCard | null>(
+    null,
+  );
   const [loading, setLoading] = useState(Boolean(routeCard?.id));
   const [detailError, setDetailError] = useState<string | null>(null);
 
@@ -109,14 +111,12 @@ const DetailPokemon = ({ navigation, route }: DetailPokemonProps) => {
 
       <ScrollView
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
           <PokemonCardAnimation data={card} />
         </View>
 
-
-        <View className='h-[20px]'/>
+        <View className="h-[20px]" />
 
         {detailError ? (
           <View style={styles.errorBox}>
@@ -177,7 +177,9 @@ const DetailPokemon = ({ navigation, route }: DetailPokemonProps) => {
               <View key={attack.name} style={styles.attackBlock}>
                 <View style={styles.attackHeader}>
                   <Text style={styles.attackName}>{attack.name}</Text>
-                  <Text style={styles.attackDamage}>{attack.damage || '-'}</Text>
+                  <Text style={styles.attackDamage}>
+                    {attack.damage || '-'}
+                  </Text>
                 </View>
                 <Text style={styles.attackCost}>
                   Cost: {attack.cost?.join(', ') ?? '-'}
@@ -204,13 +206,19 @@ const DetailPokemon = ({ navigation, route }: DetailPokemonProps) => {
 
         <Section title="Battle Info">
           <View style={styles.infoGrid}>
-            <InfoPill label="Weakness" value={formatBattleValues(card.weaknesses)} />
+            <InfoPill
+              label="Weakness"
+              value={formatBattleValues(card.weaknesses)}
+            />
             <InfoPill
               label="Resistance"
               value={formatBattleValues(card.resistances)}
             />
             <InfoPill label="Retreat" value={card.retreatCost?.join(', ')} />
-            <InfoPill label="Legalities" value={formatLegalities(card.legalities)} />
+            <InfoPill
+              label="Legalities"
+              value={formatLegalities(card.legalities)}
+            />
           </View>
         </Section>
       </ScrollView>
@@ -218,7 +226,7 @@ const DetailPokemon = ({ navigation, route }: DetailPokemonProps) => {
   );
 };
 
-function Header({ name, onBack }: { name: string; onBack: () => void }) {
+function Header({name, onBack}: {name: string; onBack: () => void}) {
   return (
     <View style={styles.header}>
       <Pressable onPress={onBack} style={styles.iconButton}>
@@ -249,7 +257,7 @@ function Section({
   );
 }
 
-function InfoPill({ label, value }: { label: string; value?: string | null }) {
+function InfoPill({label, value}: {label: string; value?: string | null}) {
   return (
     <View style={styles.infoPill}>
       <Text style={styles.infoLabel}>{label}</Text>
@@ -271,14 +279,12 @@ function MarketButton({
     <Pressable
       disabled={disabled}
       onPress={onPress}
-      style={[styles.marketButton, disabled && styles.marketButtonDisabled]}
-    >
+      style={[styles.marketButton, disabled && styles.marketButtonDisabled]}>
       <Text
         style={[
           styles.marketButtonText,
           disabled && styles.marketButtonTextDisabled,
-        ]}
-      >
+        ]}>
         {label}
       </Text>
     </Pressable>
@@ -296,7 +302,9 @@ function PricePanel({
 }) {
   return (
     <Section title={title}>
-      {updatedAt ? <Text style={styles.updatedText}>Updated {updatedAt}</Text> : null}
+      {updatedAt ? (
+        <Text style={styles.updatedText}>Updated {updatedAt}</Text>
+      ) : null}
       {prices.length ? (
         prices.map(price => (
           <View key={price.label} style={styles.priceRow}>
@@ -319,7 +327,11 @@ function getTcgplayerPriceRows(card?: PokemonCard | null): PriceRow[] {
   }
 
   const values = Object.values(prices).flatMap(priceGroup =>
-    compactNumbers([priceGroup.low, priceGroup.market ?? priceGroup.mid, priceGroup.high]),
+    compactNumbers([
+      priceGroup.low,
+      priceGroup.market ?? priceGroup.mid,
+      priceGroup.high,
+    ]),
   );
 
   return getPriceSummaryRows(values, 'USD');
@@ -355,12 +367,13 @@ function getPriceSummaryRows(
 
   const low = Math.min(...values);
   const high = Math.max(...values);
-  const average = values.reduce((total, value) => total + value, 0) / values.length;
+  const average =
+    values.reduce((total, value) => total + value, 0) / values.length;
 
   return [
-    { label: 'Lowest price', value: formatCurrency(low, currency) },
-    { label: 'Average price', value: formatCurrency(average, currency) },
-    { label: 'Highest price', value: formatCurrency(high, currency) },
+    {label: 'Lowest price', value: formatCurrency(low, currency)},
+    {label: 'Average price', value: formatCurrency(average, currency)},
+    {label: 'Highest price', value: formatCurrency(high, currency)},
   ];
 }
 
@@ -379,7 +392,7 @@ function formatNumber(card: PokemonCard) {
     : `#${card.number}`;
 }
 
-function formatBattleValues(values?: Array<{ type: string; value: string }>) {
+function formatBattleValues(values?: Array<{type: string; value: string}>) {
   if (!values?.length) {
     return undefined;
   }

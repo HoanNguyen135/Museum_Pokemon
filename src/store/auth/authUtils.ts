@@ -1,28 +1,28 @@
-import { AxiosError } from 'axios';
-import { showToast } from '@/utils/toastUtils';
-import type { ApiErrorResponse } from './authTypes';
+import {AxiosError} from 'axios';
+import {showToast} from '@/utils/toastUtils';
+import type {ApiErrorResponse} from './authTypes';
 import i18n from '../../i18n/index';
 
 export const handleApiError = (error: unknown, customErrorMsg?: string) => {
-  const { response } = error as AxiosError<ApiErrorResponse>;
+  const {response} = error as AxiosError<ApiErrorResponse>;
 
   // Handle specific error responses (401, 400, etc.)
   if (response?.status === 401 || response?.status === 400) {
-    const { errors } = response.data;
+    const {errors} = response.data;
     if (errors?.[0]) {
-      showToast({ message: errors[0] });
-      return { success: false, errors };
+      showToast({message: errors[0]});
+      return {success: false, errors};
     }
 
-    const responseData = response.data as unknown as { error?: string };
+    const responseData = response.data as unknown as {error?: string};
     if (responseData?.error) {
       const errorMessage = responseData.error;
-      showToast({ message: errorMessage });
-      return { success: false, errors: [errorMessage] };
+      showToast({message: errorMessage});
+      return {success: false, errors: [errorMessage]};
     }
   }
 
   const message = customErrorMsg || i18n.t('ERRORS.COMMON_ERROR');
-  showToast({ message });
-  return { success: false, errors: [message] };
+  showToast({message});
+  return {success: false, errors: [message]};
 };

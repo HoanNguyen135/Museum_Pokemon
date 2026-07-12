@@ -1,6 +1,6 @@
-import { User } from '@/types/User';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { authActions } from './authActions';
+import {User} from '@/types/User';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {authActions} from './authActions';
 
 export interface AuthState {
   user: User | null;

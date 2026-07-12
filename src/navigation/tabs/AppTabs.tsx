@@ -1,6 +1,5 @@
-import { View, Text } from 'react-native';
-import React, { useCallback, useEffect } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, {useCallback, useEffect} from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SCREEN_NAME from '../../utils/screenName';
 import HomeScreen from '../../screens/home/HomeScreen';
 import AuthStack from '../stacks/AuthStack';
@@ -8,12 +7,12 @@ import {
   BottomTabBarProps,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import { BottomTabBar } from './BottomTabBar';
-import { useAppDispatch, useAppSelector } from '@/hook';
-import { selectUser } from '@/store/auth/authSelector';
+import {BottomTabBar} from './BottomTabBar';
+import {useAppDispatch, useAppSelector} from '@/hook';
+import {selectUser} from '@/store/auth/authSelector';
 import * as Sentry from '@sentry/react-native';
 import ProfileScreen from '@/screens/profile/ProfileScreen';
-import { settingsActions } from '@/store/settings/settingsActions';
+import {settingsActions} from '@/store/settings/settingsActions';
 import DetailPokemon from '@/screens/pokemon/DetailPokemon';
 import SetCardsScreen from '@/screens/pokemon/SetCardsScreen';
 import FullListScreen from '@/screens/pokemon/FullListScreen';
@@ -48,7 +47,7 @@ const Tabs = () => {
       account_id: user?.account_id,
       name: user?.name,
     });
-  }, []);
+  }, [user?.account_id, user?.email, user?.id, user?.name]);
 
   const checkVersionApp = () => {
     //call to server to get version app
@@ -57,7 +56,7 @@ const Tabs = () => {
   useEffect(() => {
     dispatch(settingsActions.saveDeviceDetails());
     initSentry();
-  }, []);
+  }, [dispatch, initSentry]);
 
   useEffect(() => {
     checkVersionApp();
@@ -69,8 +68,7 @@ const Tabs = () => {
       initialRouteName={SCREEN_NAME.HOME_SCREEN}
       screenOptions={{
         headerShown: false,
-      }}
-    >
+      }}>
       <Tab.Screen name={SCREEN_NAME.HOME_SCREEN} component={HomeScreen} />
       <Tab.Screen name={SCREEN_NAME.PROFILE_SCREEN} component={ProfileScreen} />
     </Tab.Navigator>
@@ -78,20 +76,20 @@ const Tabs = () => {
 };
 
 const AppTabs = () => {
+  const user = useAppSelector(selectUser);
 
-
-    const user = useAppSelector(selectUser);
-
-
-  const isLoggedIn = !!user;
+  const isLoggedIn = !user;
 
   if (isLoggedIn) {
     return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name={SCREEN_NAME.TAB} component={Tabs} />
-          <Stack.Screen name={SCREEN_NAME.DETAIL_POKEMON} component={DetailPokemon} />
-          <Stack.Screen name={SCREEN_NAME.SET_CARDS} component={SetCardsScreen} />
-          <Stack.Screen name={SCREEN_NAME.FULL_LIST} component={FullListScreen} />
+        <Stack.Screen
+          name={SCREEN_NAME.DETAIL_POKEMON}
+          component={DetailPokemon}
+        />
+        <Stack.Screen name={SCREEN_NAME.SET_CARDS} component={SetCardsScreen} />
+        <Stack.Screen name={SCREEN_NAME.FULL_LIST} component={FullListScreen} />
       </Stack.Navigator>
     );
   } else {

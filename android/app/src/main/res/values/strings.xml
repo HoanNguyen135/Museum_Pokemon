@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">RN_Base</string>
+
+    <string name="CodePushDeploymentKey" translatable="false">l6asyfJguU9K0m52UZHimiB0QwcEMzI5ZmYxZTUtOWNjOS00OTUzLWI0NjEtMjMzZjc0OWIwY2Fi</string>
+    <string name="CodePushServerUrl" translatable="false">https://9345c2dbc0fd68d0.codepush.bitrise.io</string>
 </resources>

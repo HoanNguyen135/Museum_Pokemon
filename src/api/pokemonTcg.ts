@@ -12,7 +12,7 @@ async function apiFetch<T>(
     timeoutMs?: number;
   } = {},
 ): Promise<T> {
-  const { apiKey, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+  const {apiKey, timeoutMs = DEFAULT_TIMEOUT_MS} = options;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -200,7 +200,7 @@ export async function getPokemonCards({
     params.set('select', select.join(','));
   }
 
-  return apiFetch(`${BASE_URL}/cards?${params.toString()}`, { apiKey });
+  return apiFetch(`${BASE_URL}/cards?${params.toString()}`, {apiKey});
 }
 
 export async function getPokemonSets({
@@ -220,7 +220,7 @@ export async function getPokemonSets({
     params.set('q', query);
   }
 
-  return apiFetch(`${BASE_URL}/sets?${params.toString()}`, { apiKey });
+  return apiFetch(`${BASE_URL}/sets?${params.toString()}`, {apiKey});
 }
 
 export async function getPokemonCardById({

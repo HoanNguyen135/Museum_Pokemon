@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import {useCallback, useMemo} from 'react';
 import {
   useAnimatedStyle,
   useSharedValue,
@@ -53,7 +53,7 @@ export const useScaleAnimation = (
   scaleAnimationConfig: AnimationTypes = DefaultAnimationType,
 ) => {
   const scale = useSharedValue(1);
-  const { type, config, value } = scaleAnimationConfig;
+  const {type, config, value} = scaleAnimationConfig;
 
   const getAnimation = useCallback((animationValue: number) => {
     if (type === 'spring') {
@@ -72,12 +72,12 @@ export const useScaleAnimation = (
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{scale: scale.value}],
   }));
 
   const scaleAnimationHandler = useMemo(() => {
     return {
-      handlers: { onPressIn, onPressOut },
+      handlers: {onPressIn, onPressOut},
       animatedStyle,
     };
   }, [animatedStyle, onPressIn, onPressOut]);

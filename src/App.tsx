@@ -1,31 +1,32 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Provider } from 'react-redux';
-import { persistor, store } from './store';
+import React from 'react';
+import {Provider} from 'react-redux';
+import {persistor, store} from './store';
 import AppNavigator from './navigation';
-import { PersistGate } from 'redux-persist/integration/react';
+import {PersistGate} from 'redux-persist/integration/react';
+import codePush from '@code-push-next/react-native-code-push';
+import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
+import {ApolloProvider} from '@apollo/client/react';
+
+// Initialize Apollo Client
+const client = new ApolloClient({
+  link: new HttpLink({uri: 'http://localhost:4000/graphql'}),
+  cache: new InMemoryCache(),
+});
 
 const MainApp = () => {
-
-
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <AppNavigator />
-      </PersistGate>
-    </Provider>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <AppNavigator />
+        </PersistGate>
+      </Provider>
+    </ApolloProvider>
   );
 };
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-export default MainApp;
+const codePushOptions = {
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+  installMode: codePush.InstallMode.IMMEDIATE,
+};
+export default codePush(codePushOptions)(MainApp);

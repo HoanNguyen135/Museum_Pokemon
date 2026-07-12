@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { settingsActions } from './settingsActions';
+import {createSlice} from '@reduxjs/toolkit';
+import {settingsActions} from './settingsActions';
 import * as RootNavigation from '@/utils/navigationUtils';
-import { NotificationSettings } from './settingsTypes';
-import { Theme } from '@/types/common/Theme';
+import {NotificationSettings} from './settingsTypes';
+import {Theme} from '@/types/common/Theme';
 
 interface SettingsState {
   baseUrl: string;
@@ -94,7 +94,7 @@ export const settingsSlice = createSlice({
       .addCase(
         settingsActions.getChatwootVersion.fulfilled,
         (state, action) => {
-          const { version } = action.payload;
+          const {version} = action.payload;
           state.version = version;
         },
       )
@@ -108,5 +108,5 @@ export const settingsSlice = createSlice({
       });
   },
 });
-export const { resetSettings, setLocale } = settingsSlice.actions;
+export const {resetSettings, setLocale} = settingsSlice.actions;
 export default settingsSlice.reducer;

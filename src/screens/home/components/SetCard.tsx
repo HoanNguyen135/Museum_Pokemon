@@ -1,11 +1,11 @@
-import { View, Text, Dimensions, Pressable } from 'react-native';
+import {View, Text, Dimensions, Pressable} from 'react-native';
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { MaterialIcons } from '@react-native-vector-icons/material-icons';
-import { PokemonSet } from '@/api/pokemonTcg';
+import {MaterialIcons} from '@react-native-vector-icons/material-icons';
+import {PokemonSet} from '@/api/pokemonTcg';
 import ProgressiveImage from '@/components/ProgressiveImage';
-import { useScaleAnimation } from '@/utils/useScaleAnimation';
-import { CARD_ENTRY_ANIMATION } from './CardPokemon';
+import {useScaleAnimation} from '@/utils/useScaleAnimation';
+import {CARD_ENTRY_ANIMATION} from './CardPokemon';
 import Colors from '@/constants/colors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -40,19 +40,21 @@ const SERIES_COLORS: Record<string, string> = {
 };
 
 // Reusable shadow offset
-const SHADOW_OFFSET = { width: 0, height: 6 };
+const SHADOW_OFFSET = {width: 0, height: 6};
 
-const SetCard = ({ data, index = 0, onPress }: Props) => {
-  const { handlers, animatedStyle } = useScaleAnimation();
+const SetCard = ({data, index = 0, onPress}: Props) => {
+  const {handlers, animatedStyle} = useScaleAnimation();
 
-  const seriesColor = data.series ? (SERIES_COLORS[data.series] ?? Colors.typeDragon) : Colors.typeDragon;
+  const seriesColor = data.series
+    ? (SERIES_COLORS[data.series] ?? Colors.typeDragon)
+    : Colors.typeDragon;
 
   const releaseYear = data.releaseDate
     ? new Date(data.releaseDate).getFullYear()
     : null;
 
   return (
-    <View style={{ width: SET_CARD_WIDTH, height: SET_CARD_HEIGHT }}>
+    <View style={{width: SET_CARD_WIDTH, height: SET_CARD_HEIGHT}}>
       <Animated.View entering={CARD_ENTRY_ANIMATION(index)}>
         <Animated.View
           style={[
@@ -64,8 +66,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
               elevation: 10,
             },
             animatedStyle,
-          ]}
-        >
+          ]}>
           <AnimatedPressable
             onPressIn={handlers.onPressIn}
             onPressOut={handlers.onPressOut}
@@ -76,8 +77,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
               borderColor: `${seriesColor}55`,
               borderRadius: 16,
               overflow: 'hidden',
-            }}
-          >
+            }}>
             {/* Logo area with gradient-like background */}
             <View
               style={{
@@ -86,20 +86,23 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
                 backgroundColor: `${seriesColor}22`,
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}
-            >
+              }}>
               {data.images?.logo ? (
                 <ProgressiveImage
                   style={{
                     width: SET_CARD_WIDTH * 0.85,
                     height: SET_LOGO_HEIGHT * 0.7,
                   }}
-                  source={{ uri: data.images.logo }}
+                  source={{uri: data.images.logo}}
                   resizeMode="contain"
                 />
               ) : (
                 <View className="items-center justify-center">
-                  <MaterialIcons name="collections-bookmark" size={48} color={`${seriesColor}88`} />
+                  <MaterialIcons
+                    name="collections-bookmark"
+                    size={48}
+                    color={`${seriesColor}88`}
+                  />
                 </View>
               )}
 
@@ -107,8 +110,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
               {data.series && (
                 <View
                   className="absolute top-2 right-2 px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: `${seriesColor}CC` }}
-                >
+                  style={{backgroundColor: `${seriesColor}CC`}}>
                   <Text className="text-white font-bold text-[8px] uppercase tracking-wide">
                     {data.series}
                   </Text>
@@ -129,8 +131,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
             <View className="px-3 py-2.5">
               <Text
                 numberOfLines={2}
-                className="text-white font-bold text-[13px]"
-              >
+                className="text-white font-bold text-[13px]">
                 {data.name}
               </Text>
 
@@ -145,7 +146,11 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
                   )}
                   {releaseYear && (
                     <View className="flex-row items-center">
-                      <MaterialIcons name="calendar-today" size={10} color={Colors.textMuted} />
+                      <MaterialIcons
+                        name="calendar-today"
+                        size={10}
+                        color={Colors.textMuted}
+                      />
                       <Text className="text-gray-400 text-[10px] ml-1">
                         {releaseYear}
                       </Text>
@@ -156,7 +161,7 @@ const SetCard = ({ data, index = 0, onPress }: Props) => {
                   <View className="flex-row items-center">
                     <View
                       className="w-1.5 h-1.5 rounded-full mr-1"
-                      style={{ backgroundColor: Colors.accentGreen }}
+                      style={{backgroundColor: Colors.accentGreen}}
                     />
                     <Text className="text-green-400 text-[9px] font-medium">
                       {Object.keys(data.legalities).length} formats

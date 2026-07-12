@@ -5,9 +5,9 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 
-import { getStore } from '@/store/storeAccessor';
+import {getStore} from '@/store/storeAccessor';
 import I18n from '@/i18n';
-import { showToast } from '@/utils/toastUtils';
+import {showToast} from '@/utils/toastUtils';
 
 class APIService {
   private static instance: APIService;
@@ -66,9 +66,9 @@ class APIService {
         }
         if (error.response?.status === 401) {
           const store = getStore();
-          store.dispatch({ type: 'auth/logout' });
+          store.dispatch({type: 'auth/logout'});
         } else {
-          showToast({ message: I18n.t('ERRORS.COMMON_ERROR') });
+          showToast({message: I18n.t('ERRORS.COMMON_ERROR')});
         }
         return Promise.reject(error);
       },

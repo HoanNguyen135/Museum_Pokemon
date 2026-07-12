@@ -1,105 +1,117 @@
-import { View, Text, Button, ScrollView, Image, ImageBackground, StatusBar, Dimensions, Platform, Animated } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import SystemNavigationBar from 'react-native-system-navigation-bar';
+import {
+  View,
+  Text,
+  Button,
+  ScrollView,
+  ImageBackground,
+  Platform,
+  Animated,
+} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
 import InputField from '@/components/InputFields';
 import icons from '@/assets/icons';
 import CustomButton from '@/components/CuttomButton';
 import images from '@/assets/images';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import TextCustom from '@/components/TextCustom';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import {KeyboardAvoidingView} from 'react-native-keyboard-controller';
 import OAuth from '@/components/OAuth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
-
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import checkUpdateCodePush from '@/utils/checkUpdateCodePush';
 
 const LoginScreen = () => {
-
-
-
-
   const [form, setForm] = useState<{
-    email: string,
-    password: string
+    email: string;
+    password: string;
   }>({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
 
+  const {label,loading,handleCheckUpdate} = checkUpdateCodePush()
 
   const translateY = useRef(new Animated.Value(0)).current;
 
-
-
   useEffect(() => {
-    
-
     const animated = Animated.loop(
       Animated.sequence([
-        Animated.timing(translateY,{
+        Animated.timing(translateY, {
           toValue: -20,
-          duration:1000,
-          useNativeDriver: true
+          duration: 1000,
+          useNativeDriver: true,
         }),
 
-          Animated.timing(translateY,{
+        Animated.timing(translateY, {
           toValue: 0,
-          duration:1000,
-          useNativeDriver: true
-        })
-      ])
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]),
     );
 
     animated.start();
-  
+
     return () => {
       animated.stop();
-    }
-  }, [])
-  
+    };
+  }, [translateY]);
 
   const onSignInPress = () => {
-GoogleSignin.signOut()
-  }
+    GoogleSignin.signOut();
+  };
 
-
-  const handleGoRegister = ()=>{
-
-  }
+  const handleGoRegister = () => {};
 
   return (
-    <KeyboardAvoidingView style={{
-      flex:1
-    }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ImageBackground style={{
+    <KeyboardAvoidingView
+      style={{
         flex: 1,
-      }} source={images.background} resizeMode="cover">
-
-        <SafeAreaView style={{ flex: 1 }} edges={['left', 'right']}>
-
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ImageBackground
+        style={{
+          flex: 1,
+        }}
+        source={images.background}
+        resizeMode="cover">
+        <SafeAreaView style={{flex: 1}} edges={['left', 'right']}>
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View
+              style={{
+                height: 50,
+              }}
+            />
+
+            <Button
+              disabled={loading}
+              title={label}
+              onPress={() => handleCheckUpdate()}
+            />
+
             <View>
-              <Animated.Image style={{transform: [
-               {
-                translateY: translateY
-               }
-              ]}} className='mt-10 w-[280px] h-[220px] self-center' resizeMode='contain' source={images.pokemon_header} />
+              <Animated.Image
+                style={{
+                  transform: [
+                    {
+                      translateY: translateY,
+                    },
+                  ],
+                }}
+                className="mt-10 w-[280px] h-[220px] self-center"
+                resizeMode="contain"
+                source={images.pokemon_header}
+              />
             </View>
 
             <View>
               <View className="w-full items-center">
-
-                <TextCustom className='text-4xl font-bold mt-8 text-white' >
+                <TextCustom className="text-4xl font-bold mt-8 text-white">
                   Welcome Back!
                 </TextCustom>
-                <TextCustom className='text-xl mt-3 ' >
+                <TextCustom className="text-xl mt-3 ">
                   Login to your Poke Museum account
                 </TextCustom>
-
               </View>
 
               <View className="p-5">
@@ -110,7 +122,7 @@ GoogleSignin.signOut()
                   icon={icons.email}
                   textContentType="emailAddress"
                   value={form.email}
-                  onChangeText={(value) => setForm({ ...form, email: value })}
+                  onChangeText={value => setForm({...form, email: value})}
                 />
 
                 <InputField
@@ -121,10 +133,8 @@ GoogleSignin.signOut()
                   secureTextEntry={true}
                   textContentType="password"
                   value={form.password}
-                  onChangeText={(value) => setForm({ ...form, password: value })}
+                  onChangeText={value => setForm({...form, password: value})}
                 />
-
-
 
                 <CustomButton
                   title="Sign In"
@@ -132,26 +142,22 @@ GoogleSignin.signOut()
                   className="mt-6 bg-primaryButton"
                 />
 
+                <View className="w-full mt-10 flex-row  items-center justify-center">
+                  <View className="h-[1px] flex-1 bg-primaryText" />
 
-                <View className='w-full mt-10 flex-row  items-center justify-center'>
-                  <View className='h-[1px] flex-1 bg-primaryText'/>
-
-                  <View className='ml-2 mr-2 items-center justify-center self-center bg-transparent'>
-                    <TextCustom>
-                    Or countinue with 
-                    </TextCustom>
+                  <View className="ml-2 mr-2 items-center justify-center self-center bg-transparent">
+                    <TextCustom>Or countinue with</TextCustom>
                   </View>
 
-                   <View className='h-[1px] flex-1 bg-primaryText'/>
+                  <View className="h-[1px] flex-1 bg-primaryText" />
                 </View>
 
-                <OAuth/>
+                <OAuth />
 
                 <Text
                   onPress={handleGoRegister}
-                  className="text-lg text-center  text-primaryText mt-10"
-                >
-                  Don't have an account?{" "}
+                  className="text-lg text-center  text-primaryText mt-10">
+                  Don't have an account?{' '}
                   <Text className="text-primaryButton">Sign Up</Text>
                 </Text>
               </View>

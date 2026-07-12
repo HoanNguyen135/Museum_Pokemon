@@ -10,7 +10,8 @@ android/sentry.properties
 .env
 .env.*
 
-
+# Apk 
+*.apk 
 
 # Xcode
 #

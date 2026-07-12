@@ -1,6 +1,6 @@
-
-import React, { useEffect } from 'react';import { Image, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, {useEffect} from 'react';
+import {Image, StyleSheet, View} from 'react-native';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -13,20 +13,20 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
+import type {SharedValue} from 'react-native-reanimated';
 import ProgressiveImage from './ProgressiveImage';
-import { PokemonCard } from '@/api/pokemonTcg';
+import {PokemonCard} from '@/api/pokemonTcg';
 
 const SPARKLES = [
-  { left: 24, top: 44, size: 5 },
-  { left: 118, top: 62, size: 3 },
-  { left: 184, top: 88, size: 5 },
-  { left: 54, top: 132, size: 4 },
-  { left: 154, top: 156, size: 3 },
-  { left: 206, top: 198, size: 4 },
-  { left: 34, top: 232, size: 3 },
-  { left: 132, top: 262, size: 5 },
-  { left: 178, top: 298, size: 3 },
+  {left: 24, top: 44, size: 5},
+  {left: 118, top: 62, size: 3},
+  {left: 184, top: 88, size: 5},
+  {left: 54, top: 132, size: 4},
+  {left: 154, top: 156, size: 3},
+  {left: 206, top: 198, size: 4},
+  {left: 34, top: 232, size: 3},
+  {left: 132, top: 262, size: 5},
+  {left: 178, top: 298, size: 3},
 ] as const;
 
 const SPIN_RANGE = [0, 0.25, 0.5, 0.75, 1];
@@ -42,15 +42,13 @@ const EVEN_SPARKLE_OPACITY_VALUES = [0.15, 1, 0.25, 0.8];
 const ODD_SPARKLE_OPACITY_VALUES = [0.75, 0.2, 1, 0.1];
 const AUTO_SPIN_DURATION = 7000;
 
-
-
 type SparkleProps = {
   index: number;
   pulse: SharedValue<number>;
   sparkle: (typeof SPARKLES)[number];
 };
 
-function HolographicSparkle({ index, pulse, sparkle }: SparkleProps) {
+function HolographicSparkle({index, pulse, sparkle}: SparkleProps) {
   const sparkleStyle = useAnimatedStyle(() => {
     const isEven = index % 2 === 0;
 
@@ -73,7 +71,7 @@ function HolographicSparkle({ index, pulse, sparkle }: SparkleProps) {
             Extrapolation.CLAMP,
           ),
         },
-        { rotateZ: '45deg' },
+        {rotateZ: '45deg'},
       ],
       width: sparkle.size,
     };
@@ -87,9 +85,7 @@ function HolographicSparkle({ index, pulse, sparkle }: SparkleProps) {
   );
 }
 
-export function PokemonCardAnimation({
-  data,
-}: any) {
+export function PokemonCardAnimation({data}: any) {
   const spin = useSharedValue(0);
   const autoRotate = useSharedValue(0);
   const dragRotate = useSharedValue(0);
@@ -127,7 +123,6 @@ export function PokemonCardAnimation({
       Extrapolation.CLAMP,
     ),
   );
-
 
   const startAutoSpin = () => {
     'worklet';
@@ -190,10 +185,8 @@ export function PokemonCardAnimation({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   const pan = Gesture.Pan()
     .onBegin(() => {
-    
       cancelAnimation(autoRotate);
     })
     .onChange(event => {
@@ -206,16 +199,16 @@ export function PokemonCardAnimation({
   const auraStyle = useAnimatedStyle(() => {
     return {
       opacity: glintOpacity.value,
-      transform: [{ scale: cardScale.value }],
+      transform: [{scale: cardScale.value}],
     };
   }, [cardScale, glintOpacity]);
 
   const cardStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { perspective: 900 },
-        { rotateY: `${rotationDeg.value}deg` },
-        { scale: cardScale.value },
+        {perspective: 900},
+        {rotateY: `${rotationDeg.value}deg`},
+        {scale: cardScale.value},
       ],
     };
   }, [cardScale, rotationDeg]);
@@ -235,27 +228,21 @@ export function PokemonCardAnimation({
   const beamStyle = useAnimatedStyle(() => {
     return {
       opacity: glintOpacity.value,
-      transform: [
-        { translateX: shimmerTranslateX.value },
-        { rotateZ: '18deg' },
-      ],
+      transform: [{translateX: shimmerTranslateX.value}, {rotateZ: '18deg'}],
     };
   }, [glintOpacity, shimmerTranslateX]);
 
   const thinBeamStyle = useAnimatedStyle(() => {
     return {
       opacity: glintOpacity.value,
-      transform: [
-        { translateX: shimmerTranslateX.value },
-        { rotateZ: '-22deg' },
-      ],
+      transform: [{translateX: shimmerTranslateX.value}, {rotateZ: '-22deg'}],
     };
   }, [glintOpacity, shimmerTranslateX]);
 
   const glintStyle = useAnimatedStyle(() => {
     return {
       opacity: glintOpacity.value,
-      transform: [{ translateX: shimmerTranslateX.value }],
+      transform: [{translateX: shimmerTranslateX.value}],
     };
   }, [glintOpacity, shimmerTranslateX]);
 
@@ -264,34 +251,32 @@ export function PokemonCardAnimation({
       {/* <Animated.View style={[styles.holoAura, auraStyle]} /> */}
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.holoCard, cardStyle]}>
-         {
-            !!data.images ? (
-              <ProgressiveImage
-                source={{ uri: data.images?.large ?? data.images?.small }}
-                thumbnailSource={
-                  data.images?.small ? { uri: data.images.small } : undefined
-                }
-                resizeMode="cover"
-                style={styles.holoCard}
-              />
-            )
-          : (
-          <View style={[styles.holoImage, styles.imagePlaceholder]} />
-        )}
-        <Animated.View style={[styles.holoRainbowBlue, rainbowStyle]} />
-        <Animated.View style={[styles.holoRainbowPink, rainbowStyle]} />
-        <Animated.View style={[styles.holoColorWash, colorWashStyle]} />
-        <Animated.View style={[styles.holoBeam, beamStyle]} />
-        <Animated.View style={[styles.holoBeamThin, thinBeamStyle]} />
-        <Animated.View style={[styles.holoGlint, glintStyle]} />
-        {SPARKLES.map((sparkle, index) => (
-          <HolographicSparkle
-            index={index}
-            key={`${sparkle.left}-${sparkle.top}`}
-            pulse={sparklePulse}
-            sparkle={sparkle}
-          />
-        ))}
+          {!!data.images ? (
+            <ProgressiveImage
+              source={{uri: data.images?.large ?? data.images?.small}}
+              thumbnailSource={
+                data.images?.small ? {uri: data.images.small} : undefined
+              }
+              resizeMode="cover"
+              style={styles.holoCard}
+            />
+          ) : (
+            <View style={[styles.holoImage, styles.imagePlaceholder]} />
+          )}
+          <Animated.View style={[styles.holoRainbowBlue, rainbowStyle]} />
+          <Animated.View style={[styles.holoRainbowPink, rainbowStyle]} />
+          <Animated.View style={[styles.holoColorWash, colorWashStyle]} />
+          <Animated.View style={[styles.holoBeam, beamStyle]} />
+          <Animated.View style={[styles.holoBeamThin, thinBeamStyle]} />
+          <Animated.View style={[styles.holoGlint, glintStyle]} />
+          {SPARKLES.map((sparkle, index) => (
+            <HolographicSparkle
+              index={index}
+              key={`${sparkle.left}-${sparkle.top}`}
+              pulse={sparklePulse}
+              sparkle={sparkle}
+            />
+          ))}
         </Animated.View>
       </GestureDetector>
     </View>
@@ -345,7 +330,7 @@ const styles = StyleSheet.create({
     left: -42,
     position: 'absolute',
     top: 22,
-    transform: [{ rotateZ: '18deg' }],
+    transform: [{rotateZ: '18deg'}],
     width: 118,
   },
   holoRainbowPink: {
@@ -355,7 +340,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -54,
     top: -12,
-    transform: [{ rotateZ: '-16deg' }],
+    transform: [{rotateZ: '-16deg'}],
     width: 130,
   },
   holoBeam: {

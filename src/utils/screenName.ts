@@ -4,7 +4,7 @@ const SCREEN_NAME = {
   REGISTER_SCREEN: 'RegisterScreen',
   PROFILE_SCREEN: 'ProfileScreen',
   TAB: 'Tab',
-  DETAIL_POKEMON : 'DetailPokemon',
+  DETAIL_POKEMON: 'DetailPokemon',
   SET_CARDS: 'SetCards',
   FULL_LIST: 'FullList',
 } as const;

@@ -1,4 +1,4 @@
-import { Store } from '@reduxjs/toolkit';
+import {Store} from '@reduxjs/toolkit';
 
 let store: Store;
 

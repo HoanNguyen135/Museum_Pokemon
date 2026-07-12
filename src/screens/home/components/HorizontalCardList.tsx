@@ -1,6 +1,6 @@
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import {View, ActivityIndicator, StyleSheet} from 'react-native';
 import React from 'react';
-import { FlashList } from '@shopify/flash-list';
+import {FlashList} from '@shopify/flash-list';
 import Colors from '@/constants/colors';
 
 type HorizontalCardListProps<T> = {
@@ -40,7 +40,7 @@ function HorizontalCardList<T>({
   skeletonCount = 3,
 }: HorizontalCardListProps<T>) {
   return (
-    <View style={{ height: itemHeight + 24 }}>
+    <View style={{height: itemHeight + 24}}>
       <FlashList
         data={data}
         keyExtractor={keyExtractor}
@@ -49,8 +49,8 @@ function HorizontalCardList<T>({
         horizontal={true}
         onEndReachedThreshold={0.5}
         onEndReached={onLoadMore}
-        renderItem={({ item, index }) => (
-          <View style={{ width: itemWidth + 16, paddingRight: 16 }}>
+        renderItem={({item, index}) => (
+          <View style={{width: itemWidth + 16, paddingRight: 16}}>
             {renderItem(item, index)}
           </View>
         )}
@@ -58,7 +58,7 @@ function HorizontalCardList<T>({
         ListEmptyComponent={() =>
           !error ? (
             <View style={styles.skeletonRow}>
-              {Array.from({ length: skeletonCount }).map((_, i) => (
+              {Array.from({length: skeletonCount}).map((_, i) => (
                 <View
                   key={i}
                   style={SKELETON_CARD_STYLE(itemWidth, itemHeight)}

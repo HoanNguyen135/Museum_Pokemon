@@ -1,4 +1,4 @@
-import { NavigationContainerRef, StackActions } from '@react-navigation/native';
+import {NavigationContainerRef, StackActions} from '@react-navigation/native';
 import React from 'react';
 
 export type RootStackParamList = {
@@ -10,7 +10,7 @@ export const navigationRef =
   React.createRef<NavigationContainerRef<RootStackParamList>>();
 
 export function navigate(name: string, params?: object): void {
-  navigationRef.current?.navigate({ name, params });
+  navigationRef.current?.navigate({name, params});
 }
 
 export function pop(n: number) {
